@@ -9,7 +9,7 @@ import java.io.InputStream;
 
 public class TDBExample {
 
-    private static String TDBDatasetPath = "./res/tdb-storage";
+    private static String TDBDatasetPath = "./res/tdb-storage/TDBExample/";
 
     public static void main(String[] args) {
 
