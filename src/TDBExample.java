@@ -1,4 +1,6 @@
 import org.apache.jena.query.*;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.tdb.TDB;
 import org.apache.jena.tdb.TDBFactory;
 import org.apache.jena.tdb.TDBLoader;
@@ -15,18 +17,34 @@ public class TDBExample {
     public static void main(String[] args) {
 
         FileManager fm = FileManager.get();
-        //Apertura dei dataset creati nell'homework 2
-        InputStream in = fm.open("./res/contacts-update.nt");
-        InputStream in2 = fm.open("./res/tomato-mozzarella.nt");
+
 
         Dataset dataset = TDBFactory.createDataset(TDBDatasetPath);
-        DatasetGraphTDB dsg = TDBInternal.getBaseDatasetGraphTDB(dataset.asDatasetGraph());
+        //DatasetGraphTDB dsg = TDBInternal.getBaseDatasetGraphTDB(dataset.asDatasetGraph());
+
+
+
+        Model modelContacts = ModelFactory.createDefaultModel();
+        Model modelPizzas = ModelFactory.createDefaultModel();
+
+
+        //Apertura dei dataset creati nell'homework 2
+        TDBLoader.loadModel(modelContacts, "./res/Edoardo/contacts.nt");
+        TDBLoader.loadModel(modelPizzas, "./res/tomato-mozzarella.nt");
 
         //Caricamento nel TDB storage dei dataset in input
-        TDBLoader.load(dsg, in, false);
-        TDBLoader.load(dsg, in2, false);
+        dataset.addNamedModel("Contacts", modelContacts);
 
-        TDB.sync(dsg);
+        dataset.addNamedModel("Pizzas", modelPizzas);
+
+
+        dataset.begin(ReadWrite.READ) ;
+        String qs1 = "SELECT * WHERE {?s ?p ?o } " ;
+
+        try(QueryExecution qExec = QueryExecutionFactory.create(qs1, dataset.getNamedModel("Contacts"))) {
+            ResultSet rs = qExec.execSelect() ;
+            ResultSetFormatter.out(rs) ;
+        }
 
     }
 

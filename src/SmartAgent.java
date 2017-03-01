@@ -64,7 +64,7 @@ public class SmartAgent {
             personalPreferences.add( new Pair<Property, RDFNode>(currentstmt.getPredicate(), currentstmt.getObject()));
 
         }
-        
+
         //Agenda
         model = ContactsProfileAgenda.getNamedModel("Agenda");
         Property meetingID = model.createProperty("https://www.smartcontacts.com/ontology#meetingID");
