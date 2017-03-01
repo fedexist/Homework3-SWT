@@ -1,4 +1,5 @@
-import org.apache.jena.sparql.core.DatasetGraph;
+import org.apache.jena.query.*;
+import org.apache.jena.tdb.TDB;
 import org.apache.jena.tdb.TDBFactory;
 import org.apache.jena.tdb.TDBLoader;
 import org.apache.jena.tdb.store.DatasetGraphTDB;
@@ -18,13 +19,14 @@ public class TDBExample {
         InputStream in = fm.open("./res/contacts-update.nt");
         InputStream in2 = fm.open("./res/tomato-mozzarella.nt");
 
-        DatasetGraph dataset = TDBFactory.createDatasetGraph(TDBDatasetPath);
-        DatasetGraphTDB dsg = TDBInternal.getBaseDatasetGraphTDB(dataset);
+        Dataset dataset = TDBFactory.createDataset(TDBDatasetPath);
+        DatasetGraphTDB dsg = TDBInternal.getBaseDatasetGraphTDB(dataset.asDatasetGraph());
 
         //Caricamento nel TDB storage dei dataset in input
         TDBLoader.load(dsg, in, false);
         TDBLoader.load(dsg, in2, false);
 
+        TDB.sync(dsg);
 
     }
 

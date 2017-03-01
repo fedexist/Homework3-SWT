@@ -1,8 +1,9 @@
 import biweekly.ICalendar;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.jena.query.Dataset;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.*;
+import org.apache.jena.sparql.vocabulary.FOAF;
+import org.apache.jena.vocabulary.RDF;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,6 +35,16 @@ public class SmartAgent {
     private void generatePersonalInfo() {
 
         //Contacts: from dataset
+        Model model = ContactsProfileAgenda.getDefaultModel();
+        StmtIterator stmtIt = model.listStatements(null, RDF.type, FOAF.Person);
+
+        for( ; stmtIt.hasNext(); ){
+
+            Statement currentstmt = stmtIt.next();
+            contacts.add(currentstmt.getSubject().toString());
+
+        }
+
 
         //Personal preferences: from dataset
 
@@ -46,6 +57,11 @@ public class SmartAgent {
     }
     public ArrayList<Pair<Property, Resource>> getPersonalPreferences() {
         return personalPreferences;
+    }
+
+    public ICalendar createOrganisedEvent(){
+
+        return null;
     }
 
 }

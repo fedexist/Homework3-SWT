@@ -29,6 +29,7 @@
     <!-- http://www.co-ode.org/ontologies/pizza/pizza.owl#PersonLikesPizza -->
 
     <owl:ObjectProperty rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl#PersonLikesPizza">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
         <owl:inverseOf rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#PizzaIsLikedBy"/>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdfs:domain rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
