@@ -1,0 +1,121 @@
+_:B4345e4f0X3A15a79f98834X3AX2D7ffa <http://xmlns.com/foaf/0.1/accountName> "fleanend" .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffa <http://xmlns.com/foaf/0.1/accountServiceHomepage> <https://twitter.com/> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffa <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/OnlineAccount> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff6 <http://xmlns.com/foaf/0.1/name> "Giulia Cagnes" .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff6 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff6 <https://fleanend.github.io/ontology/#loves> <http://tomatoandmozzarellaonly.org/ontology/#Fiorentina> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff6 <http://www.w3.org/2006/vcard/ns#Given> "Giulia" .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff6 <https://fleanend.github.io/ontology/#loves> <http://tomatoandmozzarellaonly.org/ontology/#Napoletana> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff6 <https://fleanend.github.io/ontology/#loves> <http://tomatoandmozzarellaonly.org/ontology/#Siciliana> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff6 <http://xmlns.com/foaf/0.1/holdsAccount> _:B4345e4f0X3A15a79f98834X3AX2D7ff5 .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff6 <http://www.w3.org/2006/vcard/ns#Family> "Cagnes" .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff6 <http://www.w3.org/2006/vcard/ns#TEL> "0000004" .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff6 <http://www.w3.org/2006/vcard/ns#FN> "Giulia Cagnes" .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff6 <http://xmlns.com/foaf/0.1/interest> <http://www.w3.org/2001/sw/> .
+<http://fleanend.github.io/> <http://www.w3.org/2000/01/rdf-schema#seeAlso> <http://fleanend.github.io/rss> .
+<http://fleanend.github.io/> <http://xmlns.com/foaf/0.1/maker> _:B4345e4f0X3A15a79f98834X3AX2D7ffb .
+<http://fleanend.github.io/> <http://purl.org/dc/elements/1.1/title> "Not Really Fleanend's Blog" .
+<http://fleanend.github.io/> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Document> .
+_:B4345e4f0X3A15a79f98834X3AX2D7fff <http://xmlns.com/foaf/0.1/interest> <http://www.w3.org/community/datavis> .
+_:B4345e4f0X3A15a79f98834X3AX2D7fff <http://xmlns.com/foaf/0.1/interest> <http://www.w3.org/2001/sw/> .
+_:B4345e4f0X3A15a79f98834X3AX2D7fff <http://xmlns.com/foaf/0.1/weblog> <https://www.reddit.com/r/dataisbeautiful/> .
+_:B4345e4f0X3A15a79f98834X3AX2D7fff <http://xmlns.com/foaf/0.1/name> "Reddit - DataIsBeautiful" .
+_:B4345e4f0X3A15a79f98834X3AX2D7fff <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Agent> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff5 <http://xmlns.com/foaf/0.1/accountName> "Giuli92" .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff5 <http://xmlns.com/foaf/0.1/accountServiceHomepage> <https://www.facebook.com/> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff5 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/OnlineAccount> .
+<https://www.reddit.com/r/dataisbeautiful/> <http://www.w3.org/2000/01/rdf-schema#seeAlso> <https://www.reddit.com/r/dataisbeautiful.rss> .
+<https://www.reddit.com/r/dataisbeautiful/> <http://purl.org/dc/elements/1.1/title> "DataIsBeautiful" .
+<https://www.reddit.com/r/dataisbeautiful/> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Document> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffe <https://fleanend.github.io/ontology/#loves> <http://tomatoandmozzarellaonly.org/ontology/#Veneziana> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffe <http://xmlns.com/foaf/0.1/holdsAccount> _:B4345e4f0X3A15a79f98834X3AX2D7ffc .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffe <http://xmlns.com/foaf/0.1/weblog> <http://fedexist.github.io/> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffe <http://xmlns.com/foaf/0.1/interest> <http://www.w3.org/2001/sw/> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffe <http://xmlns.com/foaf/0.1/name> "Federico D'Ambrosio" .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffe <https://fleanend.github.io/ontology/#loves> <http://tomatoandmozzarellaonly.org/ontology/#PrinceCarlo> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffe <http://xmlns.com/foaf/0.1/holdsAccount> _:B4345e4f0X3A15a79f98834X3AX2D7ffd .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffe <https://fleanend.github.io/ontology/#loves> <http://tomatoandmozzarellaonly.org/ontology/#Margherita> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffe <http://www.w3.org/2006/vcard/ns#FN> "Federico D'Ambrosio" .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffe <http://www.w3.org/2006/vcard/ns#Family> "D'Ambrosio" .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffe <http://www.w3.org/2006/vcard/ns#Given> "Federico" .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffe <https://fleanend.github.io/ontology/#loves> <http://tomatoandmozzarellaonly.org/ontology/#LaReine> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffe <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffe <http://www.w3.org/2006/vcard/ns#TEL> "0000001" .
+<http://cicciopasticcio.blogspot.com/rss> <http://xmlns.com/foaf/0.1/topic> <http://www.w3.org/2001/sw/> .
+<http://cicciopasticcio.blogspot.com/rss> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/rss/1.0/channel> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff4 <http://www.w3.org/2006/vcard/ns#TEL> "1234567" .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff4 <http://xmlns.com/foaf/0.1/holdsAccount> _:B4345e4f0X3A15a79f98834X3AX2D7ff3 .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff4 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff4 <https://fleanend.github.io/ontology/#loves> <http://tomatoandmozzarellaonly.org/ontology/#FourSeasons> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff4 <http://www.w3.org/2006/vcard/ns#Family> "Pasticcio" .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff4 <https://fleanend.github.io/ontology/#loves> <http://tomatoandmozzarellaonly.org/ontology/#American> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff4 <http://xmlns.com/foaf/0.1/name> "Ciccio Pasticcio" .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff4 <https://fleanend.github.io/ontology/#loves> <http://tomatoandmozzarellaonly.org/ontology/#Parmense> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff4 <https://fleanend.github.io/ontology/#loves> <http://tomatoandmozzarellaonly.org/ontology/#PrinceCarlo> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff4 <http://xmlns.com/foaf/0.1/interest> <http://www.w3.org/2001/sw/> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff4 <http://www.w3.org/2006/vcard/ns#FN> "Ciccio Pasticcio" .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff4 <http://www.w3.org/2006/vcard/ns#Given> "Ciccio" .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff4 <http://xmlns.com/foaf/0.1/weblog> <http://cicciopasticcio.blogspot.com/> .
+<http://grebbo.github.io/rss> <http://xmlns.com/foaf/0.1/topic> <http://www.w3.org/2001/sw/> .
+<http://grebbo.github.io/rss> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/rss/1.0/channel> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffd <http://xmlns.com/foaf/0.1/accountName> "fedexist" .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffd <http://xmlns.com/foaf/0.1/accountServiceHomepage> <https://twitter.com/> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffd <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/OnlineAccount> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff3 <http://xmlns.com/foaf/0.1/accountName> "realDonaldTrump" .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff3 <http://xmlns.com/foaf/0.1/accountServiceHomepage> <https://twitter.com/> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff3 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/OnlineAccount> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff9 <http://xmlns.com/foaf/0.1/accountName> "fleanend" .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff9 <http://xmlns.com/foaf/0.1/accountServiceHomepage> <https://github.com/> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff9 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/OnlineAccount> .
+<http://fedexist.github.io/> <http://www.w3.org/2000/01/rdf-schema#seeAlso> <http://fedexist.github.io/rss> .
+<http://fedexist.github.io/> <http://xmlns.com/foaf/0.1/maker> _:B4345e4f0X3A15a79f98834X3AX2D7ffe .
+<http://fedexist.github.io/> <http://purl.org/dc/elements/1.1/title> "Not Really Fedexist's Blog" .
+<http://fedexist.github.io/> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Document> .
+<http://cicciopasticcio.blogspot.com/> <http://www.w3.org/2000/01/rdf-schema#seeAlso> <http://cicciopasticcio.blogspot.com/rss> .
+<http://cicciopasticcio.blogspot.com/> <http://xmlns.com/foaf/0.1/maker> _:B4345e4f0X3A15a79f98834X3AX2D7ff4 .
+<http://cicciopasticcio.blogspot.com/> <http://purl.org/dc/elements/1.1/title> "Not Really Ciccio's Blog" .
+<http://cicciopasticcio.blogspot.com/> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Document> .
+<http://grebbo.github.io/> <http://www.w3.org/2000/01/rdf-schema#seeAlso> <http://grebbo.github.io/rss> .
+<http://grebbo.github.io/> <http://xmlns.com/foaf/0.1/maker> _:B4345e4f0X3A15a79f98834X3AX2D7ff8 .
+<http://grebbo.github.io/> <http://purl.org/dc/elements/1.1/title> "Not Really Enrico's Blog" .
+<http://grebbo.github.io/> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Document> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffc <http://xmlns.com/foaf/0.1/accountName> "fedexist" .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffc <http://xmlns.com/foaf/0.1/accountServiceHomepage> <https://github.com/> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffc <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/OnlineAccount> .
+<http://fedexist.github.io/rss> <http://xmlns.com/foaf/0.1/topic> <http://www.w3.org/2001/sw/> .
+<http://fedexist.github.io/rss> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/rss/1.0/channel> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff8 <https://fleanend.github.io/ontology/#loves> <http://tomatoandmozzarellaonly.org/ontology/#Caprina> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff8 <http://xmlns.com/foaf/0.1/weblog> <http://grebbo.github.io/> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff8 <http://www.w3.org/2006/vcard/ns#FN> "Enrico Ferro" .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff8 <http://www.w3.org/2006/vcard/ns#Family> "Ferro" .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff8 <https://fleanend.github.io/ontology/#loves> <http://tomatoandmozzarellaonly.org/ontology/#Capricciosa> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff8 <http://xmlns.com/foaf/0.1/interest> <http://www.w3.org/2001/sw/> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff8 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff8 <http://www.w3.org/2006/vcard/ns#TEL> "0000002" .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff8 <https://fleanend.github.io/ontology/#loves> <http://tomatoandmozzarellaonly.org/ontology/#Napoletana> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff8 <http://xmlns.com/foaf/0.1/name> "Enrico Ferro" .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff8 <https://fleanend.github.io/ontology/#loves> <http://tomatoandmozzarellaonly.org/ontology/#Marinara> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff8 <http://www.w3.org/2006/vcard/ns#Given> "Enrico" .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff8 <http://xmlns.com/foaf/0.1/holdsAccount> _:B4345e4f0X3A15a79f98834X3AX2D7ff7 .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffb <http://xmlns.com/foaf/0.1/weblog> <http://fleanend.github.io/> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffb <https://fleanend.github.io/ontology/#loves> <http://tomatoandmozzarellaonly.org/ontology/#Cilentana> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffb <http://www.w3.org/2006/vcard/ns#Family> "Ferrante" .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffb <https://fleanend.github.io/ontology/#loves> <http://tomatoandmozzarellaonly.org/ontology/#Soho> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffb <https://fleanend.github.io/ontology/#loves> <http://tomatoandmozzarellaonly.org/ontology/#Fiorentina> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffb <http://www.w3.org/2006/vcard/ns#TEL> "0000003" .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffb <http://www.w3.org/2006/vcard/ns#FN> "Edoardo Ferrante" .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffb <http://xmlns.com/foaf/0.1/holdsAccount> _:B4345e4f0X3A15a79f98834X3AX2D7ffa .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffb <http://www.w3.org/2006/vcard/ns#Given> "Edoardo" .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffb <http://xmlns.com/foaf/0.1/holdsAccount> _:B4345e4f0X3A15a79f98834X3AX2D7ff9 .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffb <https://fleanend.github.io/ontology/#loves> <http://tomatoandmozzarellaonly.org/ontology/#PolloAdAstra> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffb <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffb <http://xmlns.com/foaf/0.1/interest> <http://www.w3.org/2001/sw/> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ffb <http://xmlns.com/foaf/0.1/name> "Edoardo Ferrante" .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff7 <http://xmlns.com/foaf/0.1/accountName> "grebbo" .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff7 <http://xmlns.com/foaf/0.1/accountServiceHomepage> <https://github.com/> .
+_:B4345e4f0X3A15a79f98834X3AX2D7ff7 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/OnlineAccount> .
+<http://fleanend.github.io/rss> <http://xmlns.com/foaf/0.1/topic> <http://www.w3.org/2001/sw/> .
+<http://fleanend.github.io/rss> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/rss/1.0/channel> .
+<https://www.reddit.com/r/dataisbeautiful.rss> <http://xmlns.com/foaf/0.1/topic> <http://www.w3.org/community/datavis> .
+<https://www.reddit.com/r/dataisbeautiful.rss> <http://xmlns.com/foaf/0.1/topic> <http://www.w3.org/2001/sw/> .
+<https://www.reddit.com/r/dataisbeautiful.rss> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/rss/1.0/channel> .
