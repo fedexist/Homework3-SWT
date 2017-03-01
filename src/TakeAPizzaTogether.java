@@ -18,7 +18,7 @@ public class TakeAPizzaTogether {
     static ArrayList<ICalendar> usersCalendars = new ArrayList<ICalendar>();
     static HashMap<String, Dataset> userDatasets = new HashMap<String, Dataset>(); // <userID, Dataset>
 
-    private static String TDBDatasetPath = "./res/tdb-storage/TDBExample/";
+    private static String TDBDatasetPath = "./res/tdb-storage/";
     static String datasetURI = "https://www.smartcontacts.com/ontology";
     static String NS = datasetURI + "#";
 
@@ -70,11 +70,11 @@ public class TakeAPizzaTogether {
 
             Resource subject = agenda.createResource(user);
             Property predicate = agenda.createProperty(NS, "hasCalendar");
-            Resource object = agenda.createResource(ical.getUid().toString());
+            Resource object = agenda.createResource(ical.getUid().getValue());
             //Aggiunta tripla del calendar nel TDB
             agenda.add(subject, predicate, object);
 
-            try (PrintWriter writer = new PrintWriter("./res/" + user + "/" + ical.getUid().toString() + ".ics", "UTF-8")) {
+            try (PrintWriter writer = new PrintWriter("./res/" + user + "/" + ical.getUid().getValue() + ".ics", "UTF-8")) {
 
                 ical.write(writer);
 
@@ -85,7 +85,7 @@ public class TakeAPizzaTogether {
 
         }
 
-                /*userDatasets.get("Edoardo").begin(ReadWrite.READ) ;
+        /*userDatasets.get("Edoardo").begin(ReadWrite.READ) ;
         String qs1 = "SELECT * WHERE {?s ?p ?o } " ;
 
         try(QueryExecution qExec = QueryExecutionFactory.create(qs1, userDatasets.get("Edoardo").getNamedModel("Profile"))) {
