@@ -94,6 +94,17 @@ public class SmartAgent {
         return iCalendar;
     }
 
+    //Learning contacts preferences
+    private void fillContactsPreferences(ArrayList<SmartAgent> contacts) {
+
+        for (SmartAgent partecipant: contacts) {
+            ArrayList< Pair<Property, RDFNode> > partecipantPrefs = partecipant.getPersonalPreferences();
+            for (Pair<Property, RDFNode> element: partecipantPrefs) {
+                contactsPreferences.put(partecipant.getPersonalID(), element);
+            }
+        }
+    }
+
     public String getPersonalID() {
         return delegateID;
     }
