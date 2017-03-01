@@ -21,7 +21,7 @@ public class SmartAgent {
     private Dataset ContactsProfileAgenda;
 
     //Needed Info, generated at construction from ContactsProfileAgenda
-    private ArrayList<String> contacts;
+    private ArrayList<Resource> contacts;
 
 
     private ArrayList< Pair<Property, RDFNode> > personalPreferences;
@@ -32,10 +32,10 @@ public class SmartAgent {
 
         delegateID = ID;
         ContactsProfileAgenda = dataset;
-        contacts = new ArrayList<String>();
-        personalPreferences = new ArrayList<Pair<Property, RDFNode>>();
-        contactsPreferences = new HashMap<String, Pair<Property, RDFNode>>();
-        agenda = new HashMap<String, ICalendar>();
+        contacts = new ArrayList<>();
+        personalPreferences = new ArrayList<>();
+        contactsPreferences = new HashMap<>();
+        agenda = new HashMap<>();
 
         generatePersonalInfo();
 
@@ -45,29 +45,29 @@ public class SmartAgent {
 
         //Contacts: from dataset
         Model model = ContactsProfileAgenda.getNamedModel("Contacts");
-        StmtIterator stmtIt = model.listStatements(null, RDF.type, FOAF.Person);
+        ResIterator resIt = model.listSubjectsWithProperty(RDF.type, FOAF.Person);
 
-        for( ; stmtIt.hasNext(); ){
+        for( ; resIt.hasNext(); ){
 
-            Statement currentstmt = stmtIt.next();
-            contacts.add(currentstmt.getSubject().toString());
+            Resource currentSubject = resIt.next();
+            System.out.println(currentSubject);
+            contacts.add(currentSubject);
 
         }
-
         //Personal preferences: from dataset
         model = ContactsProfileAgenda.getNamedModel("Profile");
-        stmtIt = model.listStatements();
+        StmtIterator stmtIt = model.listStatements();
 
         for( ; stmtIt.hasNext(); ){
 
             Statement currentstmt = stmtIt.next();
-            personalPreferences.add( new Pair<Property, RDFNode>(currentstmt.getPredicate(), currentstmt.getObject()));
+            personalPreferences.add( new Pair<>(currentstmt.getPredicate(), currentstmt.getObject()));
 
         }
 
         //Agenda
         model = ContactsProfileAgenda.getNamedModel("Agenda");
-        Property meetingID = model.createProperty("https://www.smartcontacts.com/ontology#meetingID");
+        Property meetingID = model.createProperty("https://www.smartcontacts.com/ontology#hasCalendar");
         NodeIterator nodeIt = model.listObjectsOfProperty(meetingID);
         for( ; nodeIt.hasNext(); ){
 
