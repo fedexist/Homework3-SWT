@@ -1,1 +1,2 @@
-_:Edoardo <http://www.smartcontacts.com/ontology#hatesFood> <http://www.smartcontacts.com/ontology#Tomato> .
+<https://fleanend.github.io/ontology/edoardo> <http://www.smartcontacts.com/ontology#hatesFood> <http://www.smartcontacts.com/ontology#Anchovies> .
+<https://fleanend.github.io/ontology/edoardo> <http://www.smartcontacts.com/ontology#lovesPizza> <http://www.co-ode.org/ontologies/pizza/pizza.owl#SloppyGiuseppe> .

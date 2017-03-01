@@ -1,1 +1,2 @@
-_:Giulia <http://www.smartcontacts.com/ontology#isAllergic> <http://www.smartcontacts.com/ontology#NormalDough> .
+<https://fleanend.github.io/ontology/federico> <http://www.smartcontacts.com/ontology#isAllergic> <http://www.smartcontacts.com/ontology#NormalDough> .
+<https://fleanend.github.io/ontology/federico> <http://www.smartcontacts.com/ontology#lovesPizza> <http://www.co-ode.org/ontologies/pizza/pizza.owl#AmericanHot>.
