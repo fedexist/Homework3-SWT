@@ -12,11 +12,11 @@ import java.util.UUID;
 
 public class TakeAPizzaTogether {
 
-    static ArrayList<String> users = new ArrayList<String>();
-    static ArrayList<SmartAgent> smartAgents = new ArrayList<SmartAgent>();
+    static ArrayList<String> users = new ArrayList<>();
+    static ArrayList<SmartAgent> smartAgents = new ArrayList<>();
 
-    static ArrayList<ICalendar> usersCalendars = new ArrayList<ICalendar>();
-    static HashMap<String, Dataset> userDatasets = new HashMap<String, Dataset>(); // <userID, Dataset>
+    static HashMap<String, ICalendar> usersCalendars = new HashMap<>();
+    static HashMap<String, Dataset> userDatasets = new HashMap<>(); // <userID, Dataset>
 
     private static String TDBDatasetPath = "./res/tdb-storage/";
     static String datasetURI = "https://www.smartcontacts.com/ontology";
@@ -32,27 +32,17 @@ public class TakeAPizzaTogether {
         users.add("Giulia");
 
         //Agenda TDB
-        //Inserisce nel dataset dell'utente un modello con nome "Agenda" a cui si può fare riferimento
+        //Inserisce nel dataset dell'utente tre modelli con nome "Contacts", "Profile" e "Agenda" a cui si può fare riferimento
         for (String user : users) {
-
-            Model agenda = ModelFactory.createDefaultModel();
-            Model modelContacts = ModelFactory.createDefaultModel();
-            Model modelProfile = ModelFactory.createDefaultModel();
 
             Dataset dataset = TDBFactory.createDataset(TDBDatasetPath + user + "/");
             //Apertura dei dataset creati nell'homework 2
-            modelContacts = RDFDataMgr.loadModel("./res/" + user + "/contacts.nt");
-            modelProfile = RDFDataMgr.loadModel("./res/" + user + "/profile.nt");
+            Model modelContacts = RDFDataMgr.loadModel("./res/" + user + "/contacts.nt");
+            Model modelProfile = RDFDataMgr.loadModel("./res/" + user + "/profile.nt");
             //Caricamento nel TDB storage dei dataset in input
             dataset.addNamedModel("Contacts", modelContacts);
             dataset.addNamedModel("Profile", modelProfile);
-            dataset.addNamedModel("Agenda", agenda);
-            userDatasets.put(user, dataset);
 
-
-        }
-
-        for (String user : users) {
 
             ICalendar ical = new ICalendar();
             ical.setUid(UUID.randomUUID().toString());
@@ -63,11 +53,9 @@ public class TakeAPizzaTogether {
 
             ical.addEvent(event);
 
-            usersCalendars.add(ical);
+            usersCalendars.put(user, ical);
 
-            Dataset currentDataset = userDatasets.get(user);
-            Model agenda = currentDataset.getNamedModel("Agenda");
-
+            Model agenda = ModelFactory.createDefaultModel();
             Resource subject = agenda.createResource(user);
             Property predicate = agenda.createProperty(NS, "hasCalendar");
             Resource object = agenda.createResource(ical.getUid().getValue());
@@ -82,7 +70,10 @@ public class TakeAPizzaTogether {
                 e.printStackTrace();
             }
 
+            dataset.addNamedModel("Agenda", agenda);
+            userDatasets.put(user, dataset);
 
+            smartAgents.add(new SmartAgent(user, dataset));
         }
 
         /*userDatasets.get("Edoardo").begin(ReadWrite.READ) ;
