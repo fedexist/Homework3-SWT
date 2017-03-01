@@ -45,18 +45,20 @@ public class SmartAgent {
 
         //Contacts: from dataset
         Model model = ContactsProfileAgenda.getNamedModel("Contacts");
-        ResIterator resIt = model.listSubjectsWithProperty(RDF.type, FOAF.Person);
+        StmtIterator stmtIt = model.listStatements(null,RDF.type, FOAF.Person);
 
-        for( ; resIt.hasNext(); ){
 
-            Resource currentSubject = resIt.next();
+
+        for( ; stmtIt.hasNext(); ){
+
+           Resource currentSubject = stmtIt.next().getSubject();
             System.out.println(currentSubject);
             contacts.add(currentSubject);
 
         }
+
         //Personal preferences: from dataset
         model = ContactsProfileAgenda.getNamedModel("Profile");
-        StmtIterator stmtIt = model.listStatements();
 
         for( ; stmtIt.hasNext(); ){
 

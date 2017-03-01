@@ -3,12 +3,11 @@ import biweekly.component.VEvent;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.tdb.TDB;
 import org.apache.jena.tdb.TDBFactory;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 
 public class TakeAPizzaTogether {
 
@@ -45,10 +44,15 @@ public class TakeAPizzaTogether {
 
 
             ICalendar ical = new ICalendar();
-            ical.setUid(UUID.randomUUID().toString());
+            //ical.setUid(UUID.randomUUID().toString());
+            ical.setUid(user);
+
+            Calendar c1 = GregorianCalendar.getInstance();
+            c1.set(2018, Calendar.JANUARY,1);
 
             VEvent event = new VEvent();
             event.setDescription("Test Event for user " + user);
+            event.setDateStart(c1.getTime());
             event.setUid(UUID.randomUUID().toString());
 
             ical.addEvent(event);
@@ -72,7 +76,7 @@ public class TakeAPizzaTogether {
 
             dataset.addNamedModel("Agenda", agenda);
             userDatasets.put(user, dataset);
-
+            TDB.sync(userDatasets.get(user));
             smartAgents.add(new SmartAgent(user, dataset));
         }
 

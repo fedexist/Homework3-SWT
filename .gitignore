@@ -41,6 +41,7 @@ hs_err_pid*
 .idea/dictionaries
 .idea/vcs.xml
 .idea/jsLibraryMappings.xml
+.idea/misc.xml
 
 # Sensitive or high-churn files:
 .idea/dataSources.ids
@@ -106,3 +107,7 @@ Temporary Items
 .apdisk
 
 /res/tdb-storage
+*.ics
+.idea/modules/Homework3_main.iml
+.idea/modules/Homework3_test.iml
+.idea/modules/Homework3.iml
