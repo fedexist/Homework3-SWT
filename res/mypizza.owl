@@ -6,12 +6,30 @@
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
      xmlns:mycntct="https://fleanend.github.io/ontology/#"
+     xmlns:smcnt="http://www.smartcontacts.com/ontology#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:foaf="http://xmlns.com/foaf/0.1/">
     <owl:Ontology rdf:about="http://www.co-ode.org/ontologies/pizza/pizza.owl">
         <rdfs:comment xml:lang="en">Pizza ontology example.</rdfs:comment>
     </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#sameAs -->
+
+    <owl:AnnotationProperty rdf:about="http://www.w3.org/2002/07/owl#sameAs"/>
     
 
 
@@ -34,6 +52,7 @@
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdfs:domain rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
         <rdfs:range rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#Pizza"/>
+        <owl:sameAs rdf:resource="http://www.smartcontacts.com/ontology#lovesPizza"/>
     </owl:ObjectProperty>
     
 
@@ -456,6 +475,7 @@
         <owl:disjointWith rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#MixedSeafoodTopping"/>
         <owl:disjointWith rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#PrawnsTopping"/>
         <rdfs:label xml:lang="pt">CoberturaDeAnchovies</rdfs:label>
+        <owl:sameAs rdf:resource="http://www.smartcontacts.com/ontology#Anchovies"/>
     </owl:Class>
     
 
@@ -2036,6 +2056,7 @@
         <owl:disjointWith rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#UnclosedPizza"/>
         <owl:disjointWith rdf:resource="http://www.co-ode.org/ontologies/pizza/pizza.owl#Veneziana"/>
         <rdfs:label xml:lang="pt">Margherita</rdfs:label>
+        <owl:sameAs rdf:resource="http://www.smartcontacts.com/ontology#RitaPizza"/>
     </owl:Class>
     
 
