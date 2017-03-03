@@ -5,6 +5,7 @@ import org.apache.jena.rdf.model.*;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.tdb.TDB;
 import org.apache.jena.tdb.TDBFactory;
+import org.apache.jena.util.FileManager;
 
 import java.io.*;
 import java.util.*;
@@ -88,27 +89,16 @@ public class TakeAPizzaTogether {
         //Scelta organizzatore, casuale
         SmartAgent organizer = smartAgents.get(new Random().nextInt(smartAgents.size()));
 
-        Scanner scanner = null;
-        try {
-            scanner = new Scanner(new FileReader("./res/PizzaGiuseppe.csv"));
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
+        Scanner scanner = new Scanner(FileManager.get().open("./res/PizzaGiuseppe.csv"));
         scanner.nextLine();
 
-        boolean cont = true;
-        while (cont) {
-            String pizzeriaData = scanner.nextLine();
-            String[] data = pizzeriaData.split(",");
-            if(!data[0].equals(";")) {
-                Pizzeria pizzeriaTemp = new Pizzeria(data[0], data[1].equals("yes"));
-                for (int i = 2; i < data.length; i++) {
-                    pizzeriaTemp.pizzeDellaCasa.add(data[i]);
-                    //System.out.println(pizzeriaTemp.pizzeDellaCasa);
-                }
-                pizzerias.add(pizzeriaTemp);
-            }
-            else cont = false;
+        while (scanner.hasNextLine()) {
+            String[] data = scanner.nextLine().split(",");
+
+            Pizzeria pizzeriaTemp = new Pizzeria(data[0], data[1].equals("yes"));
+            pizzeriaTemp.pizzeDellaCasa.addAll(Arrays.asList(data).subList(2, data.length));
+            pizzerias.add(pizzeriaTemp);
+
         }
         scanner.close();
 

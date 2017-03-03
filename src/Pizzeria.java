@@ -1,8 +1,5 @@
 import java.util.ArrayList;
 
-/**
- * Created by Enrico on 03/03/2017.
- */
 public class Pizzeria {
     private String name;
     private boolean baseCeliaci;
