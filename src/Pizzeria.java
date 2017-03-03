@@ -13,4 +13,24 @@ public class Pizzeria {
         this.baseCeliaci = baseCeliaci;
         pizzeDellaCasa = new ArrayList<>();
     }
+
+    public ArrayList<String> pizzeDellaCasaForDBPedia()
+    {
+        ArrayList<String> temp = new ArrayList<>();
+        for (String pizzaName:pizzeDellaCasa)
+        {
+            temp.add( pizzaName.replace(" ","_"));
+        }
+        return temp;
+    }
+
+    public ArrayList<String> pizzeDellaCasaForPizzaOwl()
+    {
+        ArrayList<String> temp = new ArrayList<>();
+        for (String pizzaName:pizzeDellaCasa)
+        {
+            temp.add( pizzaName.replace(" ",""));
+        }
+        return temp;
+    }
 }

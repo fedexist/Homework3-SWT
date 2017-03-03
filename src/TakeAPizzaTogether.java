@@ -112,6 +112,17 @@ public class TakeAPizzaTogether {
         }
         scanner.close();
 
+        for (Pizzeria pizzeria : pizzerias)
+        {
+            System.out.println(pizzeria.pizzeDellaCasaForDBPedia());
+        }
+
+        for (Pizzeria pizzeria : pizzerias)
+        {
+            System.out.println(pizzeria.pizzeDellaCasaForPizzaOwl());
+        }
+
+
         ICalendar pizzata = organizer.createOrganisedEvent(smartAgents);
 
         /*
