@@ -20,7 +20,6 @@ dependencies {
     // The production code uses Guava
     compile 'com.google.guava:guava:20.0'
     compile 'net.sf.biweekly:biweekly:0.6.0'
-    compile group: 'net.sf.supercsv', name: 'super-csv', version: '2.4.0'
 
     // Use JUnit test framework
     testCompile 'junit:junit:4.12'

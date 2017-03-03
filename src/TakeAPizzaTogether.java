@@ -21,6 +21,8 @@ public class TakeAPizzaTogether {
     static String datasetURI = "https://www.smartcontacts.com/ontology";
     static String NS = datasetURI + "#";
 
+    static ArrayList<Pizzeria> pizzerias = new ArrayList<>();
+
     public static void main(String[] args) {
 
         //Valori di test
@@ -78,14 +80,48 @@ public class TakeAPizzaTogether {
             smartAgents.add(new SmartAgent(user, dataset));
         }
 
+        /*
         for(SmartAgent smartAgent : smartAgents)
             smartAgent.fillContactsPreferences(smartAgents);
+        */
 
         //Scelta organizzatore, casuale
         SmartAgent organizer = smartAgents.get(new Random().nextInt(smartAgents.size()));
 
-        ICalendar pizzata = organizer.createOrganisedEvent();
+        Scanner scanner = null;
+        try {
+            scanner = new Scanner(new FileReader("./res/PizzaGiuseppe.csv"));
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        scanner.nextLine();
 
+        boolean cont = true;
+        while (cont) {
+            String pizzeriaData = scanner.nextLine();
+            String[] data = pizzeriaData.split(",");
+            if(!data[0].equals(";")) {
+                Pizzeria pizzeriaTemp = new Pizzeria(data[0], data[1].equals("yes"));
+                for (int i = 2; i < data.length; i++) {
+                    pizzeriaTemp.pizzeDellaCasa.add(data[i]);
+                    //System.out.println(pizzeriaTemp.pizzeDellaCasa);
+                }
+                pizzerias.add(pizzeriaTemp);
+            }
+            else cont = false;
+        }
+        scanner.close();
 
+        ICalendar pizzata = organizer.createOrganisedEvent(smartAgents);
+
+        /*
+        try (PrintWriter writer = new PrintWriter("./" + pizzata.getUid().getValue() + ".ics", "UTF-8")) {
+
+            pizzata.write(writer);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        */
     }
 }

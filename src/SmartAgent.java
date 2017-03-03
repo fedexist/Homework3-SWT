@@ -112,8 +112,9 @@ public class SmartAgent {
         return personalPreferences;
     }
 
-    public ICalendar createOrganisedEvent(){
+    public ICalendar createOrganisedEvent(ArrayList<SmartAgent> partecipants){
 
+        fillContactsPreferences(partecipants);
         //Scorre il db delle pizzerie
 
         //Per ogni pizzeria controlla le proprie preferenze e quelle dei contatti
