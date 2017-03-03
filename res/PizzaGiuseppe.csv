@@ -1,12 +1,4 @@
-Nome Pizzeria,Nome Pizza,Ingrediente 1,Ingrediente 2,Ingrediente 3, Base
-Sloppy Giuseppe,Sloppy Giuseppe,Tomato,Mozzarella,Beef,Normal
-Sloppy Giuseppe,Marinara,Tomato,Garlic,Origan,Normal
-Sloppy Giuseppe,Fiorentina,Parmesan,Spinach,Tomato,Normal
-Sloppy Giuseppe,Margherita,Tomato,Mozzarella,-,Normal
-GoVegan,Springtime,Tomato,Zucchini,Eggplant,Kamut
-GoVegan,Marinara,Tomato,Garlic,Origan,Normal
-GoVegan,Veggie Giuseppe,Potato,Seitan,Zucchini,Normal
-Sloppy Giuseppe,Napoletana,Tomato,Anchovies,Origan,Normal
-Sloppy Giuseppe,American,Pepperoni,Mozzarella,Tomato,Kamut
-GoVegan,Veneziana,Tomato,Onion,Sultana,Kamut
-GoVegan,Fiorentina,Parmesan,Spinach,Tomato,Normal
+Nome Pizzeria,Base celiaci?,Lista pizze
+Sloppy Giuseppe,yes,Sloppy Giuseppe,Cajun,Pollo Ad Astra,Soho
+GoVegan,yes,Giardiniera,Mushroom,Rosa
+Trashtier,no,Grandiosa,Deep-fried Pizza, Iranian Pizza
