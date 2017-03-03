@@ -30,7 +30,6 @@ public class TakeAPizzaTogether {
         users.add("Federico");
         users.add("Giulia");
 
-        //Agenda TDB
         //Inserisce nel dataset dell'utente tre modelli con nome "Contacts", "Profile" e "Agenda" a cui si può fare riferimento
         for (String user : users) {
 
@@ -42,15 +41,14 @@ public class TakeAPizzaTogether {
             dataset.addNamedModel("Contacts", modelContacts);
             dataset.addNamedModel("Profile", modelProfile);
 
-
             ICalendar ical = new ICalendar();
-            //ical.setUid(UUID.randomUUID().toString());
             ical.setUid(user);
 
             Calendar c1 = GregorianCalendar.getInstance();
             c1.set(2018, Calendar.JANUARY,1);
 
             VEvent event = new VEvent();
+            event.setSummary("Test event");
             event.setDescription("Test Event for user " + user);
             event.setDateStart(c1.getTime());
             event.setUid(UUID.randomUUID().toString());
@@ -80,13 +78,14 @@ public class TakeAPizzaTogether {
             smartAgents.add(new SmartAgent(user, dataset));
         }
 
-        /*userDatasets.get("Edoardo").begin(ReadWrite.READ) ;
-        String qs1 = "SELECT * WHERE {?s ?p ?o } " ;
+        for(SmartAgent smartAgent : smartAgents)
+            smartAgent.fillContactsPreferences(smartAgents);
 
-        try(QueryExecution qExec = QueryExecutionFactory.create(qs1, userDatasets.get("Edoardo").getNamedModel("Profile"))) {
-            ResultSet rs = qExec.execSelect() ;
-            ResultSetFormatter.out(rs) ;
-        }
-        */
+        //Scelta organizzatore, casuale
+        SmartAgent organizer = smartAgents.get(new Random().nextInt(smartAgents.size()));
+
+        ICalendar pizzata = organizer.createOrganisedEvent();
+
+
     }
 }

@@ -1,2 +1,3 @@
 <https://fleanend.github.io/ontology/federico> <http://www.smartcontacts.com/ontology#isAllergic> <http://www.smartcontacts.com/ontology#NormalDough> .
 <https://fleanend.github.io/ontology/federico> <http://www.smartcontacts.com/ontology#lovesPizza> <http://www.smartcontacts.com/ontology#RitaPizza>.
+<https://fleanend.github.io/ontology/federico> <https://fleanend.github.io/ontology/#loves> <http://tomatoandmozzarellaonly.org/ontology/#Veneziana> .

@@ -1,7 +1,5 @@
 import biweekly.Biweekly;
 import biweekly.ICalendar;
-import org.apache.jena.datatypes.RDFDatatype;
-import org.apache.jena.graph.Node;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.sparql.vocabulary.FOAF;
@@ -45,20 +43,19 @@ public class SmartAgent {
 
         //Contacts: from dataset
         Model model = ContactsProfileAgenda.getNamedModel("Contacts");
-        StmtIterator stmtIt = model.listStatements(null,RDF.type, FOAF.Person);
-
-
+        StmtIterator stmtIt = model.listStatements(null, RDF.type, FOAF.Person);
 
         for( ; stmtIt.hasNext(); ){
 
            Resource currentSubject = stmtIt.next().getSubject();
-            System.out.println(currentSubject);
-            contacts.add(currentSubject);
+           contacts.add(currentSubject);
 
         }
 
         //Personal preferences: from dataset
+        //Profile contains only personal preferences (otherwise there should be an apt query)
         model = ContactsProfileAgenda.getNamedModel("Profile");
+        stmtIt = model.listStatements();
 
         for( ; stmtIt.hasNext(); ){
 
@@ -97,12 +94,13 @@ public class SmartAgent {
     }
 
     //Learning contacts preferences
-    private void fillContactsPreferences(ArrayList<SmartAgent> contacts) {
+    public void fillContactsPreferences(ArrayList<SmartAgent> contacts) {
 
-        for (SmartAgent partecipant: contacts) {
-            ArrayList< Pair<Property, RDFNode> > partecipantPrefs = partecipant.getPersonalPreferences();
-            for (Pair<Property, RDFNode> element: partecipantPrefs) {
-                contactsPreferences.put(partecipant.getPersonalID(), element);
+        for (SmartAgent participant: contacts) {
+            if(!participant.equals(this)){
+                ArrayList< Pair<Property, RDFNode> > partecipantPrefs = participant.getPersonalPreferences();
+                for (Pair<Property, RDFNode> element: partecipantPrefs)
+                    contactsPreferences.put(participant.getPersonalID(), element);
             }
         }
     }
@@ -116,6 +114,11 @@ public class SmartAgent {
 
     public ICalendar createOrganisedEvent(){
 
+        //Scorre il db delle pizzerie
+
+        //Per ogni pizzeria controlla le proprie preferenze e quelle dei contatti
+
+        //Ritorna un Ical con l'evento programmato e i contatti partecipanti
         return null;
     }
 
