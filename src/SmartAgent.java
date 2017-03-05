@@ -9,7 +9,9 @@ import org.apache.jena.vocabulary.RDF;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Scanner;
 
 public class SmartAgent {
 
@@ -25,6 +27,9 @@ public class SmartAgent {
     private ArrayList< Pair<Property, RDFNode> > personalPreferences;
     private HashMap<String, Pair<Property, RDFNode> > contactsPreferences; // <contactID, Preferences>
     private HashMap<String, ICalendar> agenda; // <meetingID, ICalObject>
+
+    private ArrayList<Pizzeria> pizzerias = new ArrayList<>();
+
 
     public SmartAgent(String ID, Dataset dataset) {
 
@@ -94,7 +99,7 @@ public class SmartAgent {
     }
 
     //Learning contacts preferences
-    public void fillContactsPreferences(ArrayList<SmartAgent> contacts) {
+    private void fillContactsPreferences(ArrayList<SmartAgent> contacts) {
 
         for (SmartAgent participant: contacts) {
             if(!participant.equals(this)){
@@ -103,6 +108,23 @@ public class SmartAgent {
                     contactsPreferences.put(participant.getPersonalID(), element);
             }
         }
+    }
+
+    private void importPizzerias(){
+
+        Scanner scanner = new Scanner(FileManager.get().open("./res/PizzaGiuseppe.csv"));
+        scanner.nextLine();
+
+        while (scanner.hasNextLine()) {
+            String[] data = scanner.nextLine().split(",");
+
+            Pizzeria pizzeriaTemp = new Pizzeria(data[0], data[1].equals("yes"));
+            pizzeriaTemp.pizzeDellaCasa.addAll(Arrays.asList(data).subList(2, data.length));
+            pizzerias.add(pizzeriaTemp);
+
+        }
+        scanner.close();
+
     }
 
     public String getPersonalID() {
@@ -115,6 +137,8 @@ public class SmartAgent {
     public ICalendar createOrganisedEvent(ArrayList<SmartAgent> partecipants){
 
         fillContactsPreferences(partecipants);
+        importPizzerias();
+
         //Scorre il db delle pizzerie
 
         //Per ogni pizzeria controlla le proprie preferenze e quelle dei contatti

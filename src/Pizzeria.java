@@ -15,9 +15,7 @@ public class Pizzeria {
     {
         ArrayList<String> temp = new ArrayList<>();
         for (String pizzaName:pizzeDellaCasa)
-        {
-            temp.add( pizzaName.replace(" ","_"));
-        }
+            temp.add(pizzaName.replace(" ", "_"));
         return temp;
     }
 
@@ -25,9 +23,7 @@ public class Pizzeria {
     {
         ArrayList<String> temp = new ArrayList<>();
         for (String pizzaName:pizzeDellaCasa)
-        {
-            temp.add( pizzaName.replace(" ",""));
-        }
+            temp.add(pizzaName.replace(" ", ""));
         return temp;
     }
 }

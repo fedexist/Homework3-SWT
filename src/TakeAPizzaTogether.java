@@ -1,13 +1,15 @@
 import biweekly.ICalendar;
 import biweekly.component.VEvent;
 import org.apache.jena.query.Dataset;
-import org.apache.jena.rdf.model.*;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.tdb.TDB;
 import org.apache.jena.tdb.TDBFactory;
-import org.apache.jena.util.FileManager;
 
-import java.io.*;
+import java.io.PrintWriter;
 import java.util.*;
 
 public class TakeAPizzaTogether {
@@ -21,8 +23,6 @@ public class TakeAPizzaTogether {
     private static String TDBDatasetPath = "./res/tdb-storage/";
     static String datasetURI = "https://www.smartcontacts.com/ontology";
     static String NS = datasetURI + "#";
-
-    static ArrayList<Pizzeria> pizzerias = new ArrayList<>();
 
     public static void main(String[] args) {
 
@@ -81,37 +81,8 @@ public class TakeAPizzaTogether {
             smartAgents.add(new SmartAgent(user, dataset));
         }
 
-        /*
-        for(SmartAgent smartAgent : smartAgents)
-            smartAgent.fillContactsPreferences(smartAgents);
-        */
-
         //Scelta organizzatore, casuale
         SmartAgent organizer = smartAgents.get(new Random().nextInt(smartAgents.size()));
-
-        Scanner scanner = new Scanner(FileManager.get().open("./res/PizzaGiuseppe.csv"));
-        scanner.nextLine();
-
-        while (scanner.hasNextLine()) {
-            String[] data = scanner.nextLine().split(",");
-
-            Pizzeria pizzeriaTemp = new Pizzeria(data[0], data[1].equals("yes"));
-            pizzeriaTemp.pizzeDellaCasa.addAll(Arrays.asList(data).subList(2, data.length));
-            pizzerias.add(pizzeriaTemp);
-
-        }
-        scanner.close();
-
-        for (Pizzeria pizzeria : pizzerias)
-        {
-            System.out.println(pizzeria.pizzeDellaCasaForDBPedia());
-        }
-
-        for (Pizzeria pizzeria : pizzerias)
-        {
-            System.out.println(pizzeria.pizzeDellaCasaForPizzaOwl());
-        }
-
 
         ICalendar pizzata = organizer.createOrganisedEvent(smartAgents);
 
