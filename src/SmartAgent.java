@@ -1,5 +1,7 @@
 import biweekly.Biweekly;
 import biweekly.ICalendar;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.sparql.vocabulary.FOAF;
@@ -8,10 +10,7 @@ import org.apache.jena.vocabulary.RDF;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Scanner;
+import java.util.*;
 
 public class SmartAgent {
 
@@ -21,14 +20,26 @@ public class SmartAgent {
     private Dataset ContactsProfileAgenda;
 
     //Needed Info, generated at construction from ContactsProfileAgenda
-    private ArrayList<Resource> contacts;
+    private ArrayList<String> contacts;
 
 
     private ArrayList< Pair<Property, RDFNode> > personalPreferences;
-    private HashMap<String, Pair<Property, RDFNode> > contactsPreferences; // <contactID, Preferences>
+    private HashMap<String, ArrayList< Pair<Property, RDFNode> > > contactsPreferences; // <contactID, Preferences>
     private HashMap<String, ICalendar> agenda; // <meetingID, ICalObject>
 
+    HashMap<Resource, OWLsameAs> equivalentResources = new HashMap<>();
+
     private ArrayList<Pizzeria> pizzerias = new ArrayList<>();
+    private HashMap<Pizzeria, ArrayList< Pair< String, ArrayList< String > > > > ContactPizzerie = new HashMap<>();
+
+
+    private String findPizzasIngredients =
+            "PREFIX dbo: <http://dbpedia.org/ontology/>" +
+            "PREFIX dbr: <http://dbpedia.org/resource/>" +
+            "SELECT ?pizza ?ingredient WHERE {" +
+            " ?pizza dbo:type dbr:Pizza" +
+            " . ?pizza dbo:Ingredient ?pizza" +
+            "}";
 
 
     public SmartAgent(String ID, Dataset dataset) {
@@ -53,7 +64,7 @@ public class SmartAgent {
         for( ; stmtIt.hasNext(); ){
 
            Resource currentSubject = stmtIt.next().getSubject();
-           contacts.add(currentSubject);
+           contacts.add(currentSubject.toString());
 
         }
 
@@ -102,12 +113,13 @@ public class SmartAgent {
     private void fillContactsPreferences(ArrayList<SmartAgent> contacts) {
 
         for (SmartAgent participant: contacts) {
-            if(!participant.equals(this)){
-                ArrayList< Pair<Property, RDFNode> > partecipantPrefs = participant.getPersonalPreferences();
-                for (Pair<Property, RDFNode> element: partecipantPrefs)
-                    contactsPreferences.put(participant.getPersonalID(), element);
-            }
+            //if(!participant.equals(this)){
+                contactsPreferences.put(participant.getPersonalID(), participant.getPersonalPreferences());
+            //}
         }
+
+        //Insert own preferences
+        //contactsPreferences.put(delegateID, personalPreferences);
     }
 
     private void importPizzerias(){
@@ -127,6 +139,17 @@ public class SmartAgent {
 
     }
 
+    private Set<String> pizzasLikedByContact(String contact){
+
+        Set<String> Pizzas = new HashSet<>(1);
+
+        for( Pair<Property, RDFNode> preference : contactsPreferences.get(contact) ){
+            
+        }
+
+        return Pizzas;
+    }
+
     public String getPersonalID() {
         return delegateID;
     }
@@ -138,6 +161,45 @@ public class SmartAgent {
 
         fillContactsPreferences(partecipants);
         importPizzerias();
+
+        //Find equivalent objects with owl:sameAs property
+        OntModel pizzaOntology = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM );
+        pizzaOntology.read(FileManager.get().open("./res/mypizza.owl"), "");
+        StmtIterator stmtIterator = pizzaOntology.listStatements();
+        Property sameAs = pizzaOntology.getAnnotationProperty("http://www.w3.org/2002/07/owl#sameAs");
+
+        while(stmtIterator.hasNext()){
+
+            Statement currentStatement = stmtIterator.nextStatement();
+
+            if(currentStatement.getPredicate().equals(sameAs)){
+
+                OWLsameAs currentEquivalentClass = equivalentResources.get(currentStatement.getSubject());
+                if( currentEquivalentClass == null){
+                    currentEquivalentClass = new OWLsameAs(currentStatement.getSubject());
+                    equivalentResources.put(currentStatement.getSubject(), currentEquivalentClass);
+                }
+                currentEquivalentClass.add(currentStatement.getObject());
+
+            }
+
+        }
+        for(Pizzeria pizzeria : pizzerias){
+            Set<String> pizzas = new HashSet<>(pizzeria.pizzeDellaCasa);
+            for(String contact : contacts) {
+                Set<String> intersection = new HashSet<>(pizzas); // use the copy constructor
+                intersection.retainAll( pizzasLikedByContact(contact) );
+
+                if(!intersection.isEmpty()){
+                    ArrayList<String> containedPizzas = new ArrayList<>(intersection);
+
+                    ArrayList< Pair <String, ArrayList<String>> > currentPizzeria = ContactPizzerie.get(pizzeria);
+                    if(currentPizzeria == null)
+                        currentPizzeria = new ArrayList<>();
+                    currentPizzeria.add(new Pair<>(contact, containedPizzas));
+                }
+            }
+        }
 
         //Scorre il db delle pizzerie
 
