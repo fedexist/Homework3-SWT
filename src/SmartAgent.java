@@ -31,6 +31,8 @@ public class SmartAgent {
     HashMap<Resource, OWLsameAs> equivalentResources = new HashMap<>();
 
     private ArrayList<Pizzeria> pizzerias = new ArrayList<>();
+
+    //Map to link to each pizzeria a list of contacts who like the venue and the list of pizzas said person would eat there.
     private HashMap<Pizzeria, ArrayList< Pair< String, ArrayList< String > > > > ContactPizzerie = new HashMap<>();
 
 
@@ -141,13 +143,41 @@ public class SmartAgent {
 
     }
 
+    //finds a set of pizzas as string liked by the contact as Pizza.Owl urls
     private Set<String> pizzasLikedByContact(String contact){
 
         Set<String> Pizzas = new HashSet<>(1);
+        ArrayList<String> unlikedIngredients = new ArrayList<>();
+        //find properties sameAs
+
+        //find object sameAs
+
+        //for each preference
+
 
         for( Pair<Property, RDFNode> preference : contactsPreferences.get(contact) ){
-            
+
+            /* if (propertyOrAlias is smartcontacts:lovesPizza)
+                {
+                    if(objectOrAlias is in DBPedia or Pizza.owl)
+                        Pizzas.add(object.AsPizzaOwl())
+                }
+                else (propertyOrAlias is smartcontacts:hatesFood or smartcontacts:isAllergic)
+                {
+                    unlikedIngredients.add(object.AsPizzaOwl())
+                }
+            */
         }
+
+        /*
+            for (PizzaOrAlias pizza : DBPedia+Pizza.owl)
+            {
+                if (!pizzaOrAlias.hasIngredientAmong(unlikedIngredients))
+                {
+                    Pizzas.add(pizza.AsPizzaOwl())
+                }
+            }
+         */
 
         return Pizzas;
     }
@@ -186,6 +216,8 @@ public class SmartAgent {
             }
 
         }
+
+        //for each pizzeria fills the list of contacts willing to dine there and the set of pizzas they wish to eat
         for(Pizzeria pizzeria : pizzerias){
             Set<String> pizzas = new HashSet<>(pizzeria.pizzeDellaCasa);
             for(String contact : contacts) {
