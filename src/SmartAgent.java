@@ -196,8 +196,11 @@ public class SmartAgent {
                     ArrayList<String> containedPizzas = new ArrayList<>(intersection);
 
                     ArrayList< Pair <String, ArrayList<String>> > currentPizzeria = ContactPizzerie.get(pizzeria);
-                    if(currentPizzeria == null)
+                    if(currentPizzeria == null){
                         currentPizzeria = new ArrayList<>();
+                        ContactPizzerie.put(pizzeria, currentPizzeria);
+                    }
+
                     currentPizzeria.add(new Pair<>(contact, containedPizzas));
                 }
             }
