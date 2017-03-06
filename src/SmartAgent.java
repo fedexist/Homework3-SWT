@@ -15,6 +15,7 @@ import java.util.*;
 public class SmartAgent {
 
     private String delegateID;
+    private String delegateURI;
 
     //Raw dataset
     private Dataset ContactsProfileAgenda;
@@ -45,6 +46,7 @@ public class SmartAgent {
     public SmartAgent(String ID, Dataset dataset) {
 
         delegateID = ID;
+        delegateURI = "https://fleanend.github.io/ontology/" + delegateID.toLowerCase();
         ContactsProfileAgenda = dataset;
         contacts = new ArrayList<>();
         personalPreferences = new ArrayList<>();
@@ -114,7 +116,7 @@ public class SmartAgent {
 
         for (SmartAgent participant: contacts) {
             //if(!participant.equals(this)){
-                contactsPreferences.put(participant.getPersonalID(), participant.getPersonalPreferences());
+            contactsPreferences.put(participant.getPersonalURI(), participant.getPersonalPreferences());
             //}
         }
 
@@ -150,8 +152,8 @@ public class SmartAgent {
         return Pizzas;
     }
 
-    public String getPersonalID() {
-        return delegateID;
+    public String getPersonalURI() {
+        return delegateURI;
     }
     public ArrayList< Pair<Property, RDFNode> > getPersonalPreferences() {
         return personalPreferences;
