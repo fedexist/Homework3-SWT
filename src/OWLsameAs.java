@@ -19,16 +19,21 @@ public class OWLsameAs {
 
     @Override
     public boolean equals(Object o) {
+
         if (this == o) return true;
-        if (o == null) return false;
 
-        Resource owLsameAs = (Resource) o;
+        if(o instanceof OWLsameAs){
 
-        if(owlClass.toString().equals(owLsameAs.toString()))
-            return true;
-        for(Resource r : sameAsOwlClass)
-            if(r.toString().equals(owLsameAs.toString()))
+            OWLsameAs toCompare = (OWLsameAs) o;
+            if( this.owlClass.equals(toCompare.owlClass)
+                ||   this.sameAsOwlClass.contains(toCompare.owlClass)
+                || toCompare.sameAsOwlClass.contains(this.owlClass))
                 return true;
+
+            ArrayList<Resource> tmp = new ArrayList<>(toCompare.sameAsOwlClass);
+            tmp.retainAll(sameAsOwlClass);
+            return !tmp.isEmpty();
+        }
 
         return false;
     }

@@ -150,6 +150,7 @@ public class SmartAgent {
 
         Set<String> Pizzas = new HashSet<>(1);
         ArrayList<String> unlikedIngredients = new ArrayList<>();
+        ArrayList<OWLsameAs> properties = new ArrayList<>(equivalentProperties.values());
         //find properties sameAs
 
         //find object sameAs
@@ -158,10 +159,13 @@ public class SmartAgent {
 
         for( Pair<Property, RDFNode> preference : contactsPreferences.get(contact) ){
 
-/*
-            for(OWLsameAs o : equivalentProperties.values()){
-                if(o.equals(preference.first.asResource()))
-*/
+            OWLsameAs prop = new OWLsameAs(preference.first.asResource());
+
+            if(properties.contains( prop ))
+                Pizzas.add(preference.second.toString());
+            else
+                unlikedIngredients.add(preference.second.toString());
+
 
             /* if (propertyOrAlias is smartcontacts:lovesPizza){
 
@@ -174,7 +178,6 @@ public class SmartAgent {
                 }
             */
         }
-
         /*
             for (PizzaOrAlias pizza : DBPedia+Pizza.owl){
 
@@ -195,9 +198,9 @@ public class SmartAgent {
         return personalPreferences;
     }
 
-    public ICalendar createOrganisedEvent(ArrayList<SmartAgent> partecipants){
+    public ICalendar createOrganisedEvent(ArrayList<SmartAgent> participants){
 
-        fillContactsPreferences(partecipants);
+        fillContactsPreferences(participants);
         importPizzerias();
 
         //Find equivalent objects with owl:sameAs property
@@ -217,7 +220,7 @@ public class SmartAgent {
                     OWLsameAs currentEquivalentClass = equivalentProperties
                                                                         .get(currentStatement.getSubject().as(ObjectProperty.class));
                     if( currentEquivalentClass == null){
-                        currentEquivalentClass = new OWLsameAs(currentStatement.getSubject());
+                        currentEquivalentClass = new OWLsameAs(currentStatement.getSubject().asResource());
                         equivalentProperties.put(currentStatement.getSubject(), currentEquivalentClass);
                     }
                     currentEquivalentClass.add(currentStatement.getObject());
@@ -229,7 +232,7 @@ public class SmartAgent {
                         currentEquivalentClass = new OWLsameAs(currentStatement.getSubject());
                         equivalentObjects.put(currentStatement.getSubject(), currentEquivalentClass);
                     }
-                    currentEquivalentClass.add(currentStatement.getObject().asResource());
+                    currentEquivalentClass.add(currentStatement.getObject());
 
                 }
 
