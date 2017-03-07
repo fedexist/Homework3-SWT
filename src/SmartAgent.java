@@ -1,5 +1,6 @@
 import biweekly.Biweekly;
 import biweekly.ICalendar;
+import org.apache.jena.ontology.ObjectProperty;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.query.Dataset;
@@ -28,7 +29,8 @@ public class SmartAgent {
     private HashMap<String, ArrayList< Pair<Property, RDFNode> > > contactsPreferences; // <contactID, Preferences>
     private HashMap<String, ICalendar> agenda; // <meetingID, ICalObject>
 
-    HashMap<Resource, OWLsameAs> equivalentResources = new HashMap<>();
+    private HashMap< Resource, OWLsameAs > equivalentProperties = new HashMap<>();
+    private HashMap< Resource, OWLsameAs > equivalentObjects = new HashMap<>();
 
     private ArrayList<Pizzeria> pizzerias = new ArrayList<>();
 
@@ -154,26 +156,30 @@ public class SmartAgent {
 
         //for each preference
 
-
         for( Pair<Property, RDFNode> preference : contactsPreferences.get(contact) ){
 
-            /* if (propertyOrAlias is smartcontacts:lovesPizza)
-                {
+/*
+            for(OWLsameAs o : equivalentProperties.values()){
+                if(o.equals(preference.first.asResource()))
+*/
+
+            /* if (propertyOrAlias is smartcontacts:lovesPizza){
+
                     if(objectOrAlias is in DBPedia or Pizza.owl)
                         Pizzas.add(object.AsPizzaOwl())
                 }
-                else (propertyOrAlias is smartcontacts:hatesFood or smartcontacts:isAllergic)
-                {
+                else if (propertyOrAlias is smartcontacts:hatesFood or smartcontacts:isAllergic){
+
                     unlikedIngredients.add(object.AsPizzaOwl())
                 }
             */
         }
 
         /*
-            for (PizzaOrAlias pizza : DBPedia+Pizza.owl)
-            {
-                if (!pizzaOrAlias.hasIngredientAmong(unlikedIngredients))
-                {
+            for (PizzaOrAlias pizza : DBPedia+Pizza.owl){
+
+                if (!pizzaOrAlias.hasIngredientAmong(unlikedIngredients)){
+
                     Pizzas.add(pizza.AsPizzaOwl())
                 }
             }
@@ -206,12 +212,27 @@ public class SmartAgent {
 
             if(currentStatement.getPredicate().equals(sameAs)){
 
-                OWLsameAs currentEquivalentClass = equivalentResources.get(currentStatement.getSubject());
-                if( currentEquivalentClass == null){
-                    currentEquivalentClass = new OWLsameAs(currentStatement.getSubject());
-                    equivalentResources.put(currentStatement.getSubject(), currentEquivalentClass);
+                if(currentStatement.getSubject().canAs(ObjectProperty.class)){
+
+                    OWLsameAs currentEquivalentClass = equivalentProperties
+                                                                        .get(currentStatement.getSubject().as(ObjectProperty.class));
+                    if( currentEquivalentClass == null){
+                        currentEquivalentClass = new OWLsameAs(currentStatement.getSubject());
+                        equivalentProperties.put(currentStatement.getSubject(), currentEquivalentClass);
+                    }
+                    currentEquivalentClass.add(currentStatement.getObject());
+
+                } else {
+
+                    OWLsameAs currentEquivalentClass = equivalentObjects.get(currentStatement.getSubject());
+                    if( currentEquivalentClass == null){
+                        currentEquivalentClass = new OWLsameAs(currentStatement.getSubject());
+                        equivalentObjects.put(currentStatement.getSubject(), currentEquivalentClass);
+                    }
+                    currentEquivalentClass.add(currentStatement.getObject().asResource());
+
                 }
-                currentEquivalentClass.add(currentStatement.getObject());
+
 
             }
 

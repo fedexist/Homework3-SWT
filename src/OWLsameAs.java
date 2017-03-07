@@ -20,11 +20,17 @@ public class OWLsameAs {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null) return false;
 
-        OWLsameAs owLsameAs = (OWLsameAs) o;
+        Resource owLsameAs = (Resource) o;
 
-        return owlClass.equals(owLsameAs.owlClass) || sameAsOwlClass.contains(owLsameAs.owlClass);
+        if(owlClass.toString().equals(owLsameAs.toString()))
+            return true;
+        for(Resource r : sameAsOwlClass)
+            if(r.toString().equals(owLsameAs.toString()))
+                return true;
+
+        return false;
     }
 
     public void add(RDFNode resource){
@@ -40,5 +46,12 @@ public class OWLsameAs {
                 "owlClass=" + owlClass +
                 ", sameAsOwlClass=" + sameAsOwlClass +
                 '}';
+    }
+
+    @Override
+    public int hashCode() {
+        int result = owlClass.hashCode();
+        result = 31 * result + sameAsOwlClass.hashCode();
+        return result;
     }
 }
