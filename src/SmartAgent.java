@@ -304,14 +304,13 @@ public class SmartAgent {
         }
 
         int bestPizzeriaIndex = 2;
-        for (int i = 0; i < pizzerias.size();i++)
-        {
+        for (int i = 0; i < pizzerias.size();i++) {
+
             int candPizzeria = ContactPizzerie.get(pizzerias.get(i)).size();
             int bestPizzeria = ContactPizzerie.get(pizzerias.get(bestPizzeriaIndex)).size();
             if (candPizzeria > bestPizzeria)
-            {
                 bestPizzeriaIndex = i;
-            }
+
         }
 
         System.out.println("La pizzeria scelta è " + pizzerias.get(bestPizzeriaIndex).name);
@@ -386,7 +385,7 @@ public class SmartAgent {
                         for(RDFNode node : disj.asJavaList()){
 
                             PizzaIngredients.get(currentNamedPizza.getLocalName())
-                                    .add(node.asResource().getLocalName().replace("Topping", ""));
+                                    .add(node.asResource().getLocalName());
                         }
                     }
 
