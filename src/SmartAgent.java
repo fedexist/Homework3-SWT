@@ -222,30 +222,24 @@ public class SmartAgent {
             */
         }
 
-        Iterator it = PizzaIngredients.entrySet().iterator();
-        while (it.hasNext()) {
-            int ingredientNotLiked = 0; //set to 1 to come out of the double loop
-            Map.Entry pizzaAndIngredients = (Map.Entry)it.next();
-            for (String ingredient : (ArrayList<String>)pizzaAndIngredients.getValue())
-            {
-                for (String unlikedIngredient : dislikedIngredients)
-                {
+        for (Map.Entry<String, ArrayList<String>> entry : PizzaIngredients.entrySet()) {
+            boolean ingredientNotLiked = false; //set to 1 to come out of the double loop
+            for (String ingredient : entry.getValue()) {
+                for (String dislikedIngredient : dislikedIngredients) {
                     //System.out.println(unlikedIngredient + " " + ingredient);
-                    if (ingredient.equals(unlikedIngredient))
-                    {
+                    if (ingredient.equals(dislikedIngredient)) {
                         //System.out.println(unlikedIngredient + " not liked " + pizzaAndIngredients.getKey() + " sucks");
-                        ingredientNotLiked = 1;
+                        ingredientNotLiked = true;
                         break;
                     }
 
                 }
-                if (ingredientNotLiked == 1)
+                if (ingredientNotLiked)
                     break;
             }
-            if (ingredientNotLiked == 0) //
-            {
-                Pizzas.add((String)pizzaAndIngredients.getKey());
-            }
+            if (!ingredientNotLiked)
+                Pizzas.add(entry.getKey());
+
             //it.remove(); // avoids a ConcurrentModificationException
         }
 
