@@ -1,5 +1,6 @@
 import biweekly.Biweekly;
 import biweekly.ICalendar;
+import org.apache.jena.base.Sys;
 import org.apache.jena.ontology.*;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.*;
@@ -142,6 +143,35 @@ public class SmartAgent {
 
     }
 
+
+    private boolean hasCeliacDisease(String contact)
+    {
+
+        ArrayList<String> dislikedIngredients = new ArrayList<>();
+        ArrayList<OWLsameAs> properties = new ArrayList<>(equivalentProperties.values());
+
+        for( Pair<Property, RDFNode> preference : contactsPreferences.get(contact) ) {
+
+            OWLsameAs prop = new OWLsameAs(preference.first.asResource());
+            OWLsameAs object = new OWLsameAs(preference.second.asResource());
+
+            if (properties.contains(prop)) {
+
+            } else dislikedIngredients.add(preference.second.asResource().getLocalName());
+        }
+
+        for (String ingredient : dislikedIngredients)
+        {
+            if (ingredient.equals("NormalDough"))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
     //finds a set of pizzas as string liked by the contact as Pizza.Owl urls
     private Set<String> pizzasLikedByContact(String contact){
 
@@ -179,6 +209,7 @@ public class SmartAgent {
             } else dislikedIngredients.add(preference.second.asResource().getLocalName());
 
 
+
             /* if (propertyOrAlias is smartcontacts:lovesPizza){
 
                     if(objectOrAlias is in DBPedia or Pizza.owl)
@@ -190,15 +221,36 @@ public class SmartAgent {
                 }
             */
         }
-        /*
-            for (PizzaOrAlias pizza : DBPedia+Pizza.owl){
 
-                if (!pizzaOrAlias.hasIngredientAmong(unlikedIngredients)){
+        Iterator it = PizzaIngredients.entrySet().iterator();
+        while (it.hasNext()) {
+            int ingredientNotLiked = 0; //set to 1 to come out of the double loop
+            Map.Entry pizzaAndIngredients = (Map.Entry)it.next();
+            for (String ingredient : (ArrayList<String>)pizzaAndIngredients.getValue())
+            {
+                for (String unlikedIngredient : dislikedIngredients)
+                {
+                    //System.out.println(unlikedIngredient + " " + ingredient);
+                    if (ingredient.equals(unlikedIngredient))
+                    {
+                        //System.out.println(unlikedIngredient + " not liked " + pizzaAndIngredients.getKey() + " sucks");
+                        ingredientNotLiked = 1;
+                        break;
+                    }
 
-                    Pizzas.add(pizza.AsPizzaOwl())
                 }
+                if (ingredientNotLiked == 1)
+                    break;
             }
-         */
+            if (ingredientNotLiked == 0) //
+            {
+                Pizzas.add((String)pizzaAndIngredients.getKey());
+            }
+            //it.remove(); // avoids a ConcurrentModificationException
+        }
+
+
+        //System.out.println(contact + " " + dislikedIngredients + " " + Pizzas);
 
         return Pizzas;
     }
@@ -221,13 +273,20 @@ public class SmartAgent {
         equivalentResourcesRetrieval();
         findPizzasIngredients();
 
+        //System.out.println( PizzaIngredients.size());
+
         //for each pizzeria fills the list of contacts willing to dine there and the set of pizzas they wish to eat
         for(Pizzeria pizzeria : pizzerias){
-            Set<String> pizzas = new HashSet<>(pizzeria.pizzeDellaCasa);
+            Set<String> pizzas = new HashSet<>(pizzeria.pizzeDellaCasaForPizzaOwl());
             for(String contact : contacts) {
                 Set<String> intersection = new HashSet<>(pizzas); // use the copy constructor
                 intersection.retainAll( pizzasLikedByContact(contact) );
 
+                //If pizzeria lacks celiac food, and contact is celiac, go away
+                if (!pizzeria.baseCeliaci && hasCeliacDisease(contact))
+                {
+                    continue;
+                }
                 //if the intersection isn't empty, that is there's at least a pizza liked by the current contact
                 //then I add these pizzas to the appropriate slot in ContactPizzerie
                 if(!intersection.isEmpty()){
@@ -244,6 +303,18 @@ public class SmartAgent {
             }
         }
 
+        int bestPizzeriaIndex = 2;
+        for (int i = 0; i < pizzerias.size();i++)
+        {
+            int candPizzeria = ContactPizzerie.get(pizzerias.get(i)).size();
+            int bestPizzeria = ContactPizzerie.get(pizzerias.get(bestPizzeriaIndex)).size();
+            if (candPizzeria > bestPizzeria)
+            {
+                bestPizzeriaIndex = i;
+            }
+        }
+
+        System.out.println("La pizzeria scelta è " + pizzerias.get(bestPizzeriaIndex).name);
         //Scorre il db delle pizzerie
 
         //Per ogni pizzeria controlla le proprie preferenze e quelle dei contatti

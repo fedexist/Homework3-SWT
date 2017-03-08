@@ -1,8 +1,8 @@
 import java.util.ArrayList;
 
 public class Pizzeria {
-    private String name;
-    private boolean baseCeliaci;
+    public String name;
+    public boolean baseCeliaci;
     public ArrayList<String> pizzeDellaCasa;
 
     public Pizzeria(String name, boolean baseCeliaci) {
