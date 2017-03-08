@@ -1,12 +1,11 @@
 import biweekly.Biweekly;
 import biweekly.ICalendar;
-import org.apache.jena.ontology.ObjectProperty;
-import org.apache.jena.ontology.OntModel;
-import org.apache.jena.ontology.OntModelSpec;
+import org.apache.jena.ontology.*;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.sparql.vocabulary.FOAF;
 import org.apache.jena.util.FileManager;
+import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
 
 import java.io.IOException;
@@ -34,16 +33,19 @@ public class SmartAgent {
 
     private ArrayList<Pizzeria> pizzerias = new ArrayList<>();
 
+    private OntModel pizzaOntology = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM );
+    private HashMap<String, ArrayList<String>> PizzaIngredients = new HashMap<>();
+
     //Map to link to each pizzeria a list of contacts who like the venue and the list of pizzas said person would eat there.
     private HashMap<Pizzeria, ArrayList< Pair< String, ArrayList< String > > > > ContactPizzerie = new HashMap<>();
 
 
-    private String findPizzasIngredients =
+    private String findDBPediaPizzaIngredients =
             "PREFIX dbo: <http://dbpedia.org/ontology/>" +
             "PREFIX dbr: <http://dbpedia.org/resource/>" +
             "SELECT ?pizza ?ingredient WHERE {" +
             " ?pizza dbo:type dbr:Pizza" +
-            " . ?pizza dbo:Ingredient ?pizza" +
+            " . ?pizza dbo:Ingredient ?ingredient" +
             "}";
 
 
@@ -118,14 +120,9 @@ public class SmartAgent {
     //Learning contacts preferences
     private void fillContactsPreferences(ArrayList<SmartAgent> contacts) {
 
-        for (SmartAgent participant: contacts) {
-            //if(!participant.equals(this)){
+        //contactsPreferences contain both contacts and personal preferences
+        for (SmartAgent participant: contacts)
             contactsPreferences.put(participant.getPersonalURI(), participant.getPersonalPreferences());
-            //}
-        }
-
-        //Insert own preferences
-        //contactsPreferences.put(delegateID, personalPreferences);
     }
 
     private void importPizzerias(){
@@ -149,7 +146,7 @@ public class SmartAgent {
     private Set<String> pizzasLikedByContact(String contact){
 
         Set<String> Pizzas = new HashSet<>(1);
-        ArrayList<String> unlikedIngredients = new ArrayList<>();
+        ArrayList<String> dislikedIngredients = new ArrayList<>();
         ArrayList<OWLsameAs> properties = new ArrayList<>(equivalentProperties.values());
         //find properties sameAs
 
@@ -160,11 +157,26 @@ public class SmartAgent {
         for( Pair<Property, RDFNode> preference : contactsPreferences.get(contact) ){
 
             OWLsameAs prop = new OWLsameAs(preference.first.asResource());
+            OWLsameAs object = new OWLsameAs(preference.second.asResource());
 
-            if(properties.contains( prop ))
-                Pizzas.add(preference.second.toString());
-            else
-                unlikedIngredients.add(preference.second.toString());
+            //For simplicity we hypothesise only positive properties can have an owl:sameAs predicate
+
+            //If current property has an owl:sameAs equivalent then
+            //its object is checked for an owl:sameAs equivalent
+            //if the object has no equivalent, it gets added to the preferences
+            //else its main reference gets added
+            if(properties.contains( prop )){
+                if(equivalentObjects.values().contains(object))
+                    for(Map.Entry<Resource, OWLsameAs> entry : equivalentObjects.entrySet()){
+                        if(entry.getValue().equals(object)){
+                            Pizzas.add(entry.getKey().getLocalName());
+                            break;
+                        }
+                    }
+
+                else Pizzas.add(preference.second.asResource().getLocalName());
+
+            } else dislikedIngredients.add(preference.second.asResource().getLocalName());
 
 
             /* if (propertyOrAlias is smartcontacts:lovesPizza){
@@ -204,42 +216,10 @@ public class SmartAgent {
         importPizzerias();
 
         //Find equivalent objects with owl:sameAs property
-        OntModel pizzaOntology = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM );
+
         pizzaOntology.read(FileManager.get().open("./res/mypizza.owl"), "");
-        StmtIterator stmtIterator = pizzaOntology.listStatements();
-        Property sameAs = pizzaOntology.getAnnotationProperty("http://www.w3.org/2002/07/owl#sameAs");
-
-        while(stmtIterator.hasNext()){
-
-            Statement currentStatement = stmtIterator.nextStatement();
-
-            if(currentStatement.getPredicate().equals(sameAs)){
-
-                if(currentStatement.getSubject().canAs(ObjectProperty.class)){
-
-                    OWLsameAs currentEquivalentClass = equivalentProperties
-                                                                        .get(currentStatement.getSubject().as(ObjectProperty.class));
-                    if( currentEquivalentClass == null){
-                        currentEquivalentClass = new OWLsameAs(currentStatement.getSubject().asResource());
-                        equivalentProperties.put(currentStatement.getSubject(), currentEquivalentClass);
-                    }
-                    currentEquivalentClass.add(currentStatement.getObject());
-
-                } else {
-
-                    OWLsameAs currentEquivalentClass = equivalentObjects.get(currentStatement.getSubject());
-                    if( currentEquivalentClass == null){
-                        currentEquivalentClass = new OWLsameAs(currentStatement.getSubject());
-                        equivalentObjects.put(currentStatement.getSubject(), currentEquivalentClass);
-                    }
-                    currentEquivalentClass.add(currentStatement.getObject());
-
-                }
-
-
-            }
-
-        }
+        equivalentResourcesRetrieval();
+        findPizzasIngredients();
 
         //for each pizzeria fills the list of contacts willing to dine there and the set of pizzas they wish to eat
         for(Pizzeria pizzeria : pizzerias){
@@ -248,6 +228,8 @@ public class SmartAgent {
                 Set<String> intersection = new HashSet<>(pizzas); // use the copy constructor
                 intersection.retainAll( pizzasLikedByContact(contact) );
 
+                //if the intersection isn't empty, that is there's at least a pizza liked by the current contact
+                //then I add these pizzas to the appropriate slot in ContactPizzerie
                 if(!intersection.isEmpty()){
                     ArrayList<String> containedPizzas = new ArrayList<>(intersection);
 
@@ -268,6 +250,78 @@ public class SmartAgent {
 
         //Ritorna un Ical con l'evento programmato e i contatti partecipanti
         return null;
+    }
+
+    // Here are checked all the statements with an owl:sameAs property,
+    // ObjectProperties and Classes are separated, as it comes handy for their access
+    private void equivalentResourcesRetrieval(){
+
+        StmtIterator stmtIterator = pizzaOntology.listStatements(null, OWL.sameAs, (RDFNode) null);
+
+        while(stmtIterator.hasNext()){
+
+            Statement currentStatement = stmtIterator.nextStatement();
+
+            if(currentStatement.getSubject().canAs(ObjectProperty.class)){
+
+                OWLsameAs currentEquivalentClass = equivalentProperties.get(currentStatement.getSubject().as(ObjectProperty.class));
+                if( currentEquivalentClass == null){
+                    currentEquivalentClass = new OWLsameAs(currentStatement.getSubject().asResource());
+                    equivalentProperties.put(currentStatement.getSubject(), currentEquivalentClass);
+                }
+                currentEquivalentClass.add(currentStatement.getObject());
+
+            } else {
+
+                OWLsameAs currentEquivalentClass = equivalentObjects.get(currentStatement.getSubject());
+                if( currentEquivalentClass == null){
+                    currentEquivalentClass = new OWLsameAs(currentStatement.getSubject());
+                    equivalentObjects.put(currentStatement.getSubject(), currentEquivalentClass);
+                }
+                currentEquivalentClass.add(currentStatement.getObject());
+            }
+        }
+
+    }
+
+    //Here are retrieved all the ingredients for all the possible pizzas in both mypizza.owl and DBPedia
+    //Ingredients, in mypizza.owl are restriction on the property hasTopping of the superclasses of each NamedPizza
+    //This restriction is retrieved as an AllValuesFromRestriction and its operands are retrieved
+    private void findPizzasIngredients(){
+
+        //Ingredients from all the pizzas in pizza.owl, put into PizzaIngredients
+        OntClass namedPizza = pizzaOntology.getOntClass("http://www.co-ode.org/ontologies/pizza/pizza.owl#NamedPizza");
+        Property hasTopping = pizzaOntology.getOntProperty("http://www.co-ode.org/ontologies/pizza/pizza.owl#hasTopping");
+        Iterator<OntClass> namedPizzaIt = namedPizza.listSubClasses();
+
+        while(namedPizzaIt.hasNext()){
+
+            OntClass currentNamedPizza = namedPizzaIt.next();
+            Iterator<OntClass> currentNamedPizzaIt = currentNamedPizza.listSuperClasses();
+
+            PizzaIngredients.put(currentNamedPizza.getLocalName(), new ArrayList<String>());
+
+            while(currentNamedPizzaIt.hasNext()){
+                OntClass c = currentNamedPizzaIt.next();
+                if(c.isRestriction()){
+                    Restriction r = c.asRestriction();
+
+                    if(r.isAllValuesFromRestriction() && r.getOnProperty().equals(hasTopping)){
+
+
+                        OntClass restrictedClass = (OntClass) r.asAllValuesFromRestriction().getAllValuesFrom();
+                        RDFList disj = restrictedClass.asUnionClass().getOperands();
+
+                        for(RDFNode node : disj.asJavaList()){
+
+                            PizzaIngredients.get(currentNamedPizza.getLocalName())
+                                    .add(node.asResource().getLocalName().replace("Topping", ""));
+                        }
+                    }
+
+                }
+            }
+        }
     }
 
 }
