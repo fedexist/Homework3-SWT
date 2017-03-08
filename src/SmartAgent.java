@@ -144,8 +144,7 @@ public class SmartAgent {
     }
 
 
-    private boolean hasCeliacDisease(String contact)
-    {
+    private boolean hasCeliacDisease(String contact) {
 
         ArrayList<String> dislikedIngredients = new ArrayList<>();
         ArrayList<OWLsameAs> properties = new ArrayList<>(equivalentProperties.values());
@@ -153,21 +152,14 @@ public class SmartAgent {
         for( Pair<Property, RDFNode> preference : contactsPreferences.get(contact) ) {
 
             OWLsameAs prop = new OWLsameAs(preference.first.asResource());
-            OWLsameAs object = new OWLsameAs(preference.second.asResource());
 
-            if (properties.contains(prop)) {
+            if (!properties.contains(prop))
+                dislikedIngredients.add(preference.second.asResource().getLocalName());
 
-            } else dislikedIngredients.add(preference.second.asResource().getLocalName());
         }
 
-        for (String ingredient : dislikedIngredients)
-        {
-            if (ingredient.equals("NormalDough"))
-            {
-                return true;
-            }
-        }
-        return false;
+        return dislikedIngredients.contains("NormalDough");
+
     }
 
 
