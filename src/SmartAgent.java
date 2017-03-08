@@ -2,12 +2,14 @@ import biweekly.Biweekly;
 import biweekly.ICalendar;
 import org.apache.jena.base.Sys;
 import org.apache.jena.ontology.*;
-import org.apache.jena.query.Dataset;
+import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.*;
+import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 import org.apache.jena.sparql.vocabulary.FOAF;
 import org.apache.jena.util.FileManager;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -385,7 +387,62 @@ public class SmartAgent {
 
                 }
             }
+
+            //System.out.println(PizzaIngredients);
         }
+
+        //Select every pizza with corresponding ingredients from dbpedia
+        String prologRdf = "PREFIX rdf: <" + RDF.getURI() + ">";
+        String NL = System.getProperty("line.separator");
+
+        String queryStr = "PREFIX dbo: <http://dbpedia.org/ontology/>" +
+                "PREFIX dbr: <http://dbpedia.org/resource/>" + prologRdf +
+                "SELECT ?pizza ?ingredient "+
+                "WHERE {" +
+                " {" +
+                "?pizza dbo:type dbr:Pizza" +
+                ". ?pizza dbo:ingredient ?ingredient" +
+                "} UNION { ?pizza rdf:type dbo:Food . ?pizza dbo:ingredient ?ingredient . FILTER(regex(str(?pizza),'[Pp][Ii][Zz][Zz][Aa]', 'i')) }" +
+                "}";
+
+        Query query = QueryFactory.create(queryStr);
+        QueryExecution qexec = QueryExecutionFactory.sparqlService("http://dbpedia.org/sparql", query);
+        ((QueryEngineHTTP) qexec).addParam("timeout", "100000");
+        ResultSetRewindable rs =  ResultSetFactory.makeRewindable(qexec.execSelect());
+
+        //System.out.println("Result as CSV: ");
+        //ResultSetFormatter.outputAsCSV(rs);
+        rs.reset();
+
+
+        for( ; rs.hasNext() ; ) {
+            QuerySolution qs = rs.next();
+            String pizza = qs.getResource("pizza").getLocalName().toLowerCase().replace("_", "");
+            String ingredient = qs.getResource("ingredient").getLocalName().toLowerCase().replace("_", "");
+            boolean added = false;
+            //a new ingredient is added only if there isn't a similar one already (if contains...) for a pizza with the same name
+            for(Map.Entry <String,ArrayList<String> > entry : PizzaIngredients.entrySet()){
+                if(entry.getKey().equalsIgnoreCase(pizza)){
+                    for(int i = 0; i<entry.getValue().size(); i++){
+                        String ingr = entry.getValue().get(i).toLowerCase();
+                        if((ingr.contains(ingredient) || ingredient.contains(ingr))) {
+                            added = true;
+                        }
+                    }
+                    if(!added) {
+                        PizzaIngredients.get(entry.getKey()).add(ingredient);
+                        added = true;
+                    }
+                }
+            }
+            //otherwise a new entry is added
+            if(!added) {
+                PizzaIngredients.put(pizza, new ArrayList<String>());
+                PizzaIngredients.get(pizza).add(ingredient);
+            }
+        }
+
+        //System.out.println(PizzaIngredients);
     }
 
 }
