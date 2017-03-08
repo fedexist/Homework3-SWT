@@ -1,6 +1,5 @@
 import biweekly.Biweekly;
 import biweekly.ICalendar;
-import org.apache.jena.base.Sys;
 import org.apache.jena.ontology.*;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.*;
@@ -217,22 +216,13 @@ public class SmartAgent {
         for (Map.Entry<String, ArrayList<String>> entry : PizzaIngredients.entrySet()) {
             boolean ingredientNotLiked = false; //set to 1 to come out of the double loop
             for (String ingredient : entry.getValue()) {
-                for (String dislikedIngredient : dislikedIngredients) {
-                    //System.out.println(unlikedIngredient + " " + ingredient);
-                    if (ingredient.equals(dislikedIngredient)) {
-                        //System.out.println(unlikedIngredient + " not liked " + pizzaAndIngredients.getKey() + " sucks");
-                        ingredientNotLiked = true;
-                        break;
-                    }
-
-                }
-                if (ingredientNotLiked)
+                if(dislikedIngredients.contains(ingredient)){
+                    ingredientNotLiked = true;
                     break;
+                }
             }
             if (!ingredientNotLiked)
                 Pizzas.add(entry.getKey());
-
-            //it.remove(); // avoids a ConcurrentModificationException
         }
 
 
