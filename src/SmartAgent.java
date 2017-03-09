@@ -136,15 +136,6 @@ public class SmartAgent {
 
         }
         scanner.close();
-
-        //scanner = new Scanner(FileManager.get().open("./res/IngredientiPizzePizzerie.csv"));
-
-        for(Pizzeria pizzeria : pizzerias){
-
-            System.out.println(pizzeria);
-
-        }
-
     }
 
 
