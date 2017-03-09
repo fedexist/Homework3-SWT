@@ -7,6 +7,7 @@ import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 import org.apache.jena.sparql.vocabulary.FOAF;
 import org.apache.jena.util.FileManager;
 import org.apache.jena.vocabulary.OWL;
+import org.apache.jena.vocabulary.OWL2;
 import org.apache.jena.vocabulary.RDF;
 
 import java.io.IOException;
@@ -31,6 +32,8 @@ public class SmartAgent {
 
     private HashMap< Resource, OWLsameAs > equivalentProperties = new HashMap<>();
     private HashMap< Resource, OWLsameAs > equivalentObjects = new HashMap<>();
+
+    private HashMap< Resource, OWLsameAs > pizzeriaToOntology = new HashMap<>();
 
     private ArrayList<Pizzeria> pizzerias = new ArrayList<>();
 
@@ -125,7 +128,7 @@ public class SmartAgent {
             String line = scanner.nextLine();
             String[] data = line.split(",");
 
-            System.out.println(line);
+            //System.out.println(line);
 
             Pizzeria pizzeriaTemp = new Pizzeria(data[0], data[1].equals("yes"));
             if(!pizzerias.contains(pizzeriaTemp))
@@ -138,6 +141,64 @@ public class SmartAgent {
         scanner.close();
     }
 
+    private void findSameIngredientsPizzas(){
+        for( Pizzeria pizzeria: pizzerias) {
+            for(Map.Entry<String, ArrayList<String>> pizzaFromPizzeria : pizzeria.pizzeDellaCasa.entrySet()) {
+                for(Map.Entry<String, ArrayList<String>> pizzaFromOntology : PizzaIngredients.entrySet()) {
+                    ArrayList <String> ingredientsFromPizzeria = pizzaFromPizzeria.getValue();
+                    ArrayList <String> ingredientsFromOntology = pizzaFromOntology.getValue();
+
+                     //System.out.println(ingredientsFromPizzeria);
+
+                    //if the Pizzeria's Pizza has all and only the ingredients from the Ontology's Pizza, they are the same Pizza.
+                    if(equalIngredients(ingredientsFromOntology,ingredientsFromPizzeria)) {
+                        Resource pizzaPizzeriaRes = ResourceFactory.createResource(pizzaFromPizzeria.getKey());
+                        Resource pizzaOntologyRes = ResourceFactory.createResource("http://www.co-ode.org/ontologies/pizza/pizza.owl/" + pizzaFromOntology.getKey());
+
+                        if (pizzeriaToOntology.get(pizzaPizzeriaRes) != null) {
+                            pizzeriaToOntology.get(pizzaPizzeriaRes).add(pizzaOntologyRes);
+                        }
+                        else
+                        {
+                            OWLsameAs pizzaEquivalent = new OWLsameAs(pizzaPizzeriaRes);
+                            pizzaEquivalent.add(pizzaOntologyRes);
+                            pizzeriaToOntology.put(pizzaPizzeriaRes,pizzaEquivalent);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean equalIngredients(ArrayList<String> ingredientsA, ArrayList<String> ingredientsB) {
+
+        ArrayList<String> ingredientsAPolished = new ArrayList<>();
+        ArrayList<String> ingredientsBPolished = new ArrayList<>();
+
+
+
+        for(String ingredientFromA : ingredientsA)
+        {
+            if(ingredientFromA.equals("-") || ingredientFromA.equals("flour")) {
+                continue;
+            }
+            ingredientsAPolished.add(ingredientFromA.toLowerCase().replace("topping","").replace("sauce","").replace(" ",""));
+        }
+        for(String ingredientFromB : ingredientsB)
+        {
+            if(ingredientFromB.equals("-") || ingredientFromB.equals("flour")) {
+                continue;
+            }
+            ingredientsBPolished.add(ingredientFromB.toLowerCase().replace("topping","").replace("sauce","").replace(" ",""));
+        }
+
+
+        if(ingredientsAPolished.containsAll(ingredientsBPolished)) {
+            return true;
+        }
+
+        return false;
+    }
 
     private boolean hasCeliacDisease(String contact) {
 
@@ -232,6 +293,11 @@ public class SmartAgent {
         pizzaOntology.read(FileManager.get().open("./res/mypizza.owl"), "");
         equivalentResourcesRetrieval();
         findPizzasIngredients();
+        findSameIngredientsPizzas();
+
+        for(Map.Entry<Resource, OWLsameAs> entry : pizzeriaToOntology.entrySet()) {
+            System.out.print(entry.getValue() + "\n");
+        }
 
         //System.out.println( PizzaIngredients.size());
 
@@ -272,7 +338,7 @@ public class SmartAgent {
 
         }
 
-        System.out.println("La pizzeria scelta è " + pizzerias.get(bestPizzeriaIndex).name);
+        //System.out.println("La pizzeria scelta è " + pizzerias.get(bestPizzeriaIndex).name);
         //Scorre il db delle pizzerie
 
         //Per ogni pizzeria controlla le proprie preferenze e quelle dei contatti
@@ -342,9 +408,12 @@ public class SmartAgent {
                         RDFList disj = restrictedClass.asUnionClass().getOperands();
 
                         for(RDFNode node : disj.asJavaList()){
-
                             PizzaIngredients.get(currentNamedPizza.getLocalName())
                                     .add(node.asResource().getLocalName());
+                        }
+                        if (currentNamedPizza.getLocalName().equals("Margherita")) {
+                            PizzaIngredients.get(currentNamedPizza.getLocalName())
+                                    .add("Baxeicò");
                         }
                     }
 
