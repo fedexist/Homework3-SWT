@@ -153,7 +153,7 @@ public class SmartAgent {
 
                     //if the Pizzeria's Pizza has all and only the ingredients from the Ontology's Pizza, they are the same Pizza.
                     if(equalIngredients(ingredientsFromOntology,ingredientsFromPizzeria)) {
-                        Resource pizzaPizzeriaRes = ResourceFactory.createResource("http://www.co-ode.org/ontologies/pizza/pizza.owl/" + pizzaFromPizzeria.getKey());
+                        Resource pizzaPizzeriaRes = ResourceFactory.createResource("http://www.co-ode.org/ontologies/pizza/pizza.owl/#" + pizzaFromPizzeria.getKey());
                         Resource pizzaOntologyRes = ResourceFactory.createResource(pizzaFromOntology.getKey());
 
                         if (ontologyToPizzeria.get(pizzaOntologyRes) != null) {
@@ -178,27 +178,22 @@ public class SmartAgent {
 
 
 
-        for(String ingredientFromA : ingredientsA)
-        {
-            if(ingredientFromA.equals("-") || ingredientFromA.equals("flour")) {
+        for(String ingredientFromA : ingredientsA) {
+            if(ingredientFromA.equals("-") || ingredientFromA.equals("flour"))
                 continue;
-            }
+
             ingredientsAPolished.add(ingredientFromA.toLowerCase().replace("topping","").replace("sauce","").replace(" ",""));
         }
-        for(String ingredientFromB : ingredientsB)
-        {
-            if(ingredientFromB.equals("-") || ingredientFromB.equals("flour")) {
+        for(String ingredientFromB : ingredientsB) {
+            if(ingredientFromB.equals("-") || ingredientFromB.equals("flour"))
                 continue;
-            }
+
             ingredientsBPolished.add(ingredientFromB.toLowerCase().replace("topping","").replace("sauce","").replace(" ",""));
         }
 
 
-        if(ingredientsAPolished.containsAll(ingredientsBPolished)) {
-            return true;
-        }
+        return ingredientsAPolished.containsAll(ingredientsBPolished);
 
-        return false;
     }
 
     private boolean hasCeliacDisease(String contact) {
@@ -280,6 +275,7 @@ public class SmartAgent {
     public String getPersonalURI() {
         return delegateURI;
     }
+
     public ArrayList< Pair<Property, RDFNode> > getPersonalPreferences() {
         return personalPreferences;
     }
@@ -352,20 +348,22 @@ public class SmartAgent {
                 OWLsameAs prop = new OWLsameAs(preference.first.asResource());
 
                 if (properties.contains(prop)) {
-                    System.out.println(ontologyToPizzeria.get(preference.second.asResource()).equivalentLocals());
-                    likedPizzas.addAll( ontologyToPizzeria.get(preference.second.asResource()).equivalentLocals());
+                    if(ontologyToPizzeria.get(preference.second.asResource()) != null)
+                        likedPizzas.addAll( ontologyToPizzeria.get(preference.second.asResource()).equivalentLocals() );
+                    else
+                        likedPizzas.add(preference.second.asResource().getLocalName());
                 }
             }
             //System.out.println("Liked pizzas: " + likedPizzas + "\n");
+
             pizzaCandidates.retainAll(likedPizzas);
             ArrayList<String> pizzas = new ArrayList<>(pizzaCandidates);
+
             //System.out.println("Def candidates: " + pizzas + "\n\n");
-            if(!pizzas.isEmpty()) {
+            if(!pizzas.isEmpty())
                 menuSuggestions.put(person, pizzas.get(new Random().nextInt(pizzas.size())));
-            }
-            else {
+            else
                 menuSuggestions.put(person, entry.second.get(new Random().nextInt(entry.second.size())) );
-            }
         }
         System.out.println("La pizzeria scelta è " + pizzerias.get(bestPizzeriaIndex).name + "\nIl menù che consigliamo è : " + menuSuggestions);
 
