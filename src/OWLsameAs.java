@@ -45,6 +45,18 @@ public class OWLsameAs {
 
     }
 
+    public ArrayList<String> equivalentLocals(){
+
+        ArrayList<String> local = new ArrayList<>();
+
+        for(Resource rs : sameAsOwlClass)
+        {
+            local.add(rs.getLocalName());
+        }
+
+        return local;
+    }
+
     @Override
     public String toString() {
         return "OWLsameAs{" +
