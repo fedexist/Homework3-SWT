@@ -8,7 +8,6 @@ import org.apache.jena.sparql.vocabulary.FOAF;
 import org.apache.jena.util.FileManager;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.RDFS;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,16 +39,6 @@ public class SmartAgent {
 
     //Map to link to each pizzeria a list of contacts who like the venue and the list of pizzas said person would eat there.
     private HashMap<Pizzeria, ArrayList< Pair< String, ArrayList< String > > > > ContactPizzerie = new HashMap<>();
-
-
-    private String findDBPediaPizzaIngredients =
-            "PREFIX dbo: <http://dbpedia.org/ontology/>" +
-            "PREFIX dbr: <http://dbpedia.org/resource/>" +
-            "SELECT ?pizza ?ingredient WHERE {" +
-            " ?pizza dbo:type dbr:Pizza" +
-            " . ?pizza dbo:Ingredient ?ingredient" +
-            "}";
-
 
     public SmartAgent(String ID, Dataset dataset) {
 
@@ -129,18 +118,32 @@ public class SmartAgent {
 
     private void importPizzerias(){
 
-        Scanner scanner = new Scanner(FileManager.get().open("./res/PizzaGiuseppe.csv"));
+        Scanner scanner = new Scanner(FileManager.get().open("./res/IngredientiPizzePizzerie.csv"));
         scanner.nextLine();
 
         while (scanner.hasNextLine()) {
-            String[] data = scanner.nextLine().split(",");
+            String line = scanner.nextLine();
+            String[] data = line.split(",");
+
+            System.out.println(line);
 
             Pizzeria pizzeriaTemp = new Pizzeria(data[0], data[1].equals("yes"));
-            pizzeriaTemp.pizzeDellaCasa.addAll(Arrays.asList(data).subList(2, data.length));
-            pizzerias.add(pizzeriaTemp);
+            if(!pizzerias.contains(pizzeriaTemp))
+                pizzerias.add(pizzeriaTemp);
+
+            pizzerias.get(pizzerias.indexOf(pizzeriaTemp))
+                    .pizzeDellaCasa.put(data[2], new ArrayList<>(Arrays.asList(data).subList(3, data.length)));
 
         }
         scanner.close();
+
+        //scanner = new Scanner(FileManager.get().open("./res/IngredientiPizzePizzerie.csv"));
+
+        for(Pizzeria pizzeria : pizzerias){
+
+            System.out.println(pizzeria);
+
+        }
 
     }
 
@@ -201,18 +204,6 @@ public class SmartAgent {
 
             } else dislikedIngredients.add(preference.second.asResource().getLocalName());
 
-
-
-            /* if (propertyOrAlias is smartcontacts:lovesPizza){
-
-                    if(objectOrAlias is in DBPedia or Pizza.owl)
-                        Pizzas.add(object.AsPizzaOwl())
-                }
-                else if (propertyOrAlias is smartcontacts:hatesFood or smartcontacts:isAllergic){
-
-                    unlikedIngredients.add(object.AsPizzaOwl())
-                }
-            */
         }
 
         for (Map.Entry<String, ArrayList<String>> entry : PizzaIngredients.entrySet()) {
@@ -262,9 +253,8 @@ public class SmartAgent {
 
                 //If pizzeria lacks celiac food, and contact is celiac, go away
                 if (!pizzeria.baseCeliaci && hasCeliacDisease(contact))
-                {
                     continue;
-                }
+
                 //if the intersection isn't empty, that is there's at least a pizza liked by the current contact
                 //then I add these pizzas to the appropriate slot in ContactPizzerie
                 if(!intersection.isEmpty()){
@@ -282,7 +272,7 @@ public class SmartAgent {
         }
 
         int bestPizzeriaIndex = 2;
-        for (int i = 0; i < pizzerias.size();i++) {
+        for (int i = 0; i < pizzerias.size();i++){
 
             int candPizzeria = ContactPizzerie.get(pizzerias.get(i)).size();
             int bestPizzeria = ContactPizzerie.get(pizzerias.get(bestPizzeriaIndex)).size();
