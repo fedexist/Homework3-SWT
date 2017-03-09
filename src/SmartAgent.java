@@ -28,6 +28,7 @@ public class SmartAgent {
     private ArrayList< Pair<Property, RDFNode> > personalPreferences;
     private HashMap<String, ArrayList< Pair<Property, RDFNode> > > contactsPreferences; // <contactID, Preferences>
     private HashMap<String, ICalendar> agenda; // <meetingID, ICalObject>
+    private HashMap<String, String> menuSuggestions; // <contactID, namePizza>
 
     private HashMap< Resource, OWLsameAs > equivalentProperties = new HashMap<>();
     private HashMap< Resource, OWLsameAs > equivalentObjects = new HashMap<>();
@@ -48,6 +49,7 @@ public class SmartAgent {
         contacts = new ArrayList<>();
         personalPreferences = new ArrayList<>();
         contactsPreferences = new HashMap<>();
+        menuSuggestions = new HashMap<>();
         agenda = new HashMap<>();
 
         generatePersonalInfo();
@@ -125,7 +127,7 @@ public class SmartAgent {
             String line = scanner.nextLine();
             String[] data = line.split(",");
 
-            System.out.println(line);
+            //System.out.println(line);
 
             Pizzeria pizzeriaTemp = new Pizzeria(data[0], data[1].equals("yes"));
             if(!pizzerias.contains(pizzeriaTemp))
@@ -272,7 +274,33 @@ public class SmartAgent {
 
         }
 
-        System.out.println("La pizzeria scelta è " + pizzerias.get(bestPizzeriaIndex).name);
+        ArrayList<OWLsameAs> properties = new ArrayList<>(equivalentProperties.values());
+        for (Pair< String, ArrayList< String > > entry: ContactPizzerie.get(pizzerias.get(bestPizzeriaIndex))) {
+            String person = entry.first;
+            Set<String> pizzaCandidates = new HashSet<>(entry.second);
+            //System.out.println(person + " may like " + pizzaCandidates);
+            //System.out.println(person + "\nPizza candidates: " + pizzaCandidates + "\n");
+
+            Set<String> likedPizzas = new HashSet<>();
+            for (Pair<Property, RDFNode> preference : contactsPreferences.get(person)) {
+                OWLsameAs prop = new OWLsameAs(preference.first.asResource());
+                if (properties.contains(prop)) {
+                    likedPizzas.add(preference.second.asResource().getLocalName());
+                }
+            }
+            //System.out.println("Liked pizzas: " + likedPizzas + "\n");
+            pizzaCandidates.retainAll(likedPizzas);
+            ArrayList<String> pizzas = new ArrayList<>(pizzaCandidates);
+            //System.out.println("Def candidates: " + pizzas + "\n\n");
+            if(!pizzas.isEmpty()) {
+                menuSuggestions.put(person, pizzas.get(new Random().nextInt(pizzas.size())));
+            }
+            else {
+                menuSuggestions.put(person, entry.second.get(new Random().nextInt(entry.second.size())) );
+            }
+        }
+        System.out.println("La pizzeria scelta è " + pizzerias.get(bestPizzeriaIndex).name + "\nIl menù che consigliamo è : " + menuSuggestions);
+
         //Scorre il db delle pizzerie
 
         //Per ogni pizzeria controlla le proprie preferenze e quelle dei contatti
@@ -388,7 +416,7 @@ public class SmartAgent {
                 if(entry.getKey().equalsIgnoreCase(pizza)){
                     for(int i = 0; i<entry.getValue().size(); i++){
                         String ingr = entry.getValue().get(i).toLowerCase();
-                        if((ingr.contains(ingredient) || ingredient.contains(ingr))) {
+                        if((ingr.contains(ingredient) || ingredient.contains(ingr)) || ingredient.contains(ingr.replace("topping", ""))) {
                             added = true;
                         }
                     }
