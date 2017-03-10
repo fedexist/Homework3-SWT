@@ -84,16 +84,19 @@ public class TakeAPizzaTogether {
         //Scelta organizzatore, casuale
         SmartAgent organizer = smartAgents.get(new Random().nextInt(smartAgents.size()));
 
-        ICalendar pizzata = organizer.createOrganisedEvent(smartAgents);
+        Calendar c1 = GregorianCalendar.getInstance();
+        c1.set(2017, Calendar.MAY,5);
 
-        /*
+        ICalendar pizzata = organizer.createOrganisedEvent(smartAgents, c1.getTime());
+
         try (PrintWriter writer = new PrintWriter("./" + pizzata.getUid().getValue() + ".ics", "UTF-8")) {
 
             pizzata.write(writer);
 
         } catch (Exception e) {
+
             e.printStackTrace();
+
         }
-        */
     }
 }

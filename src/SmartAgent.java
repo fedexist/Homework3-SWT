@@ -1,5 +1,6 @@
 import biweekly.Biweekly;
 import biweekly.ICalendar;
+import biweekly.component.VEvent;
 import org.apache.jena.ontology.*;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.*;
@@ -118,6 +119,7 @@ public class SmartAgent {
         //contactsPreferences contain both contacts and personal preferences
         for (SmartAgent participant: contacts)
             contactsPreferences.put(participant.getPersonalURI(), participant.getPersonalPreferences());
+
     }
 
     private void importPizzerias(){
@@ -280,7 +282,9 @@ public class SmartAgent {
         return personalPreferences;
     }
 
-    public ICalendar createOrganisedEvent(ArrayList<SmartAgent> participants){
+    public ICalendar createOrganisedEvent(ArrayList<SmartAgent> participants, Date date){
+
+        System.out.println(delegateID + " is the organizer.");
 
         fillContactsPreferences(participants);
         importPizzerias();
@@ -292,16 +296,17 @@ public class SmartAgent {
         findPizzasIngredients();
         findSameIngredientsPizzas();
 
+/*
         for(Map.Entry<Resource, OWLsameAs> entry : ontologyToPizzeria.entrySet()) {
             System.out.print(entry.getValue() + "\n");
         }
-
+*/
         //System.out.println( PizzaIngredients.size());
 
         //for each pizzeria fills the list of contacts willing to dine there and the set of pizzas they wish to eat
         for(Pizzeria pizzeria : pizzerias){
             Set<String> pizzas = new HashSet<>(pizzeria.pizzeDellaCasaForPizzaOwl());
-            for(String contact : contacts) {
+            for(String contact : contactsPreferences.keySet()) {
                 Set<String> intersection = new HashSet<>(pizzas); // use the copy constructor
                 intersection.retainAll( pizzasLikedByContact(contact) );
 
@@ -325,8 +330,10 @@ public class SmartAgent {
             }
         }
 
-        int bestPizzeriaIndex = 2;
-        for (int i = 0; i < pizzerias.size();i++){
+
+
+        int bestPizzeriaIndex = 0;
+        for (int i = 1; i < pizzerias.size();i++){
 
             int candPizzeria = ContactPizzerie.get(pizzerias.get(i)).size();
             int bestPizzeria = ContactPizzerie.get(pizzerias.get(bestPizzeriaIndex)).size();
@@ -372,7 +379,23 @@ public class SmartAgent {
         //Per ogni pizzeria controlla le proprie preferenze e quelle dei contatti
 
         //Ritorna un Ical con l'evento programmato e i contatti partecipanti
-        return null;
+
+        ICalendar pizzataTraAmici = new ICalendar();
+        pizzataTraAmici.setUid("PizzataTraAmici");
+
+        VEvent event = new VEvent();
+        event.setOrganizer(delegateID + "@gmail.com");
+        event.setDateStart(date);
+        event.setUid(UUID.randomUUID().toString());
+        event.setSummary("Pizzata tra amici");
+        event.setDescription("Suggerimenti per le ordinazioni: " + menuSuggestions);
+        event.setLocation(pizzerias.get(bestPizzeriaIndex).name);
+        for(String person : menuSuggestions.keySet())
+            event.addAttendee(person);
+
+        pizzataTraAmici.addEvent(event);
+
+        return pizzataTraAmici;
     }
 
     // Here are checked all the statements with an owl:sameAs property,
