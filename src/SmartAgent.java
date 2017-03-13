@@ -1,11 +1,13 @@
 import biweekly.Biweekly;
 import biweekly.ICalendar;
 import biweekly.component.VEvent;
+import biweekly.property.Attendee;
 import org.apache.jena.ontology.*;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 import org.apache.jena.sparql.vocabulary.FOAF;
+import org.apache.jena.tdb.TDB;
 import org.apache.jena.util.FileManager;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
@@ -18,6 +20,7 @@ public class SmartAgent {
 
     private String delegateID;
     private String delegateURI;
+    private String delegateEmail;
 
     //Raw dataset
     private Dataset ContactsProfileAgenda;
@@ -48,6 +51,7 @@ public class SmartAgent {
 
         delegateID = ID;
         delegateURI = "https://fleanend.github.io/ontology/" + delegateID.toLowerCase();
+        delegateEmail = delegateID.toLowerCase() + "@gmail.com";
         ContactsProfileAgenda = dataset;
         contacts = new ArrayList<>();
         personalPreferences = new ArrayList<>();
@@ -145,24 +149,28 @@ public class SmartAgent {
     }
 
     private void findSameIngredientsPizzas(){
+
         for( Pizzeria pizzeria: pizzerias) {
             for(Map.Entry<String, ArrayList<String>> pizzaFromPizzeria : pizzeria.pizzeDellaCasa.entrySet()) {
+
                 for(Map.Entry<String, ArrayList<String>> pizzaFromOntology : PizzaIngredients.entrySet()) {
+
                     ArrayList <String> ingredientsFromPizzeria = pizzaFromPizzeria.getValue();
                     ArrayList <String> ingredientsFromOntology = pizzaFromOntology.getValue();
 
-                     //System.out.println(ingredientsFromPizzeria);
+                    //System.out.println(ingredientsFromPizzeria);
 
                     //if the Pizzeria's Pizza has all and only the ingredients from the Ontology's Pizza, they are the same Pizza.
                     if(equalIngredients(ingredientsFromOntology,ingredientsFromPizzeria)) {
-                        Resource pizzaPizzeriaRes = ResourceFactory.createResource("http://www.co-ode.org/ontologies/pizza/pizza.owl/#" + pizzaFromPizzeria.getKey());
-                        Resource pizzaOntologyRes = ResourceFactory.createResource(pizzaFromOntology.getKey());
 
-                        if (ontologyToPizzeria.get(pizzaOntologyRes) != null) {
+                        //System.out.println(pizzaFromPizzeria.getKey() + " equals " + pizzaFromOntology.getKey());
+
+                        Resource pizzaPizzeriaRes = pizzaOntology.createResource("http://www.co-ode.org/ontologies/pizza/pizza.owl/#" + pizzaFromPizzeria.getKey());
+                        Resource pizzaOntologyRes = pizzaOntology.createResource("http://www.co-ode.org/ontologies/pizza/pizza.owl/#" + pizzaFromOntology.getKey());
+
+                        if (ontologyToPizzeria.get(pizzaOntologyRes) != null)
                             ontologyToPizzeria.get(pizzaOntologyRes).add(pizzaPizzeriaRes);
-                        }
-                        else
-                        {
+                        else {
                             OWLsameAs pizzaEquivalent = new OWLsameAs(pizzaOntologyRes);
                             pizzaEquivalent.add(pizzaPizzeriaRes);
                             ontologyToPizzeria.put(pizzaOntologyRes,pizzaEquivalent);
@@ -216,19 +224,12 @@ public class SmartAgent {
 
     }
 
-
-
     //finds a set of pizzas as string liked by the contact as Pizza.Owl urls
     private Set<String> pizzasLikedByContact(String contact){
 
         Set<String> Pizzas = new HashSet<>(1);
         ArrayList<String> dislikedIngredients = new ArrayList<>();
         ArrayList<OWLsameAs> properties = new ArrayList<>(equivalentProperties.values());
-        //find properties sameAs
-
-        //find object sameAs
-
-        //for each preference
 
         for( Pair<Property, RDFNode> preference : contactsPreferences.get(contact) ){
 
@@ -245,10 +246,22 @@ public class SmartAgent {
                 if(equivalentObjects.values().contains(object))
                     for(Map.Entry<Resource, OWLsameAs> entry : equivalentObjects.entrySet()){
                         if(entry.getValue().equals(object)){
-                            Pizzas.add(entry.getKey().getLocalName());
+                            Pizzas.addAll(entry.getValue().equivalentLocals());
                             break;
                         }
                     }
+                else if(ontologyToPizzeria.values().contains(object)){
+
+                    //System.out.println("ontologytopizzeria contains " + object);
+
+                    for(Map.Entry<Resource, OWLsameAs> entry : ontologyToPizzeria.entrySet()){
+                        if(entry.getValue().equals(object)){
+                            Pizzas.addAll(entry.getValue().equivalentLocals());
+                            break;
+                        }
+                    }
+
+                }
 
                 else Pizzas.add(preference.second.asResource().getLocalName());
 
@@ -269,7 +282,7 @@ public class SmartAgent {
         }
 
 
-        //System.out.println(contact + " " + dislikedIngredients + " " + Pizzas);
+        //System.out.println(contact + " likes " + Pizzas);
 
         return Pizzas;
     }
@@ -282,11 +295,11 @@ public class SmartAgent {
         return personalPreferences;
     }
 
-    public ICalendar createOrganisedEvent(ArrayList<SmartAgent> participants, Date date){
+    public ICalendar createOrganisedEvent(HashMap<String, SmartAgent> participants, Date date){
 
         System.out.println(delegateID + " is the organizer.");
 
-        fillContactsPreferences(participants);
+        fillContactsPreferences(new ArrayList<>(participants.values()));
         importPizzerias();
 
         //Find equivalent objects with owl:sameAs property
@@ -314,10 +327,12 @@ public class SmartAgent {
                 if (!pizzeria.baseCeliaci && hasCeliacDisease(contact))
                     continue;
 
-                //if the intersection isn't empty, that is there's at least a pizza liked by the current contact
+                //if the intersection isn't empty, that there's at least a pizza liked by the current contact
                 //then I add these pizzas to the appropriate slot in ContactPizzerie
                 if(!intersection.isEmpty()){
                     ArrayList<String> containedPizzas = new ArrayList<>(intersection);
+
+                    System.out.println(contact + " likes " + containedPizzas + " in " + pizzeria.name);
 
                     ArrayList< Pair <String, ArrayList<String>> > currentPizzeria = ContactPizzerie.get(pizzeria);
                     if(currentPizzeria == null){
@@ -330,8 +345,6 @@ public class SmartAgent {
             }
         }
 
-
-
         int bestPizzeriaIndex = 0;
         for (int i = 1; i < pizzerias.size();i++){
 
@@ -342,6 +355,7 @@ public class SmartAgent {
 
         }
 
+        Property mightlike = ResourceFactory.createProperty("http://www.smartcontacts.com/ontology#mightLike");
 
         ArrayList<OWLsameAs> properties = new ArrayList<>(equivalentProperties.values());
         for (Pair< String, ArrayList< String > > entry: ContactPizzerie.get(pizzerias.get(bestPizzeriaIndex))) {
@@ -369,8 +383,15 @@ public class SmartAgent {
             //System.out.println("Def candidates: " + pizzas + "\n\n");
             if(!pizzas.isEmpty())
                 menuSuggestions.put(person, pizzas.get(new Random().nextInt(pizzas.size())));
-            else
-                menuSuggestions.put(person, entry.second.get(new Random().nextInt(entry.second.size())) );
+            else {
+
+                String suggestion = entry.second.get(new Random().nextInt(entry.second.size()));
+                menuSuggestions.put(person, suggestion );
+                Resource object = ResourceFactory.createResource("http://www.co-ode.org/ontologies/pizza/pizza.owl/#" + suggestion);
+                participants.get(person.substring(36, person.length())).updateProfile(mightlike, object);
+
+            }
+
         }
         System.out.println("La pizzeria scelta è " + pizzerias.get(bestPizzeriaIndex).name + "\nIl menù che consigliamo è : " + menuSuggestions);
 
@@ -390,10 +411,16 @@ public class SmartAgent {
         event.setSummary("Pizzata tra amici");
         event.setDescription("Suggerimenti per le ordinazioni: " + menuSuggestions);
         event.setLocation(pizzerias.get(bestPizzeriaIndex).name);
-        for(String person : menuSuggestions.keySet())
-            event.addAttendee(person);
-
+        for(String person : menuSuggestions.keySet()){
+            Attendee currentPerson = new Attendee(person, person.substring(36,person.length()) + "@gmail.com");
+            event.addAttendee(currentPerson);
+        }
         pizzataTraAmici.addEvent(event);
+
+        Resource calendarNode = ResourceFactory.createResource(pizzataTraAmici.getUid().getValue());
+        for(String attendee : menuSuggestions.keySet())
+            if(participants.get(attendee.substring(36,attendee.length())) != null)
+                participants.get(attendee.substring(36,attendee.length())).updateAgenda(calendarNode);
 
         return pizzataTraAmici;
     }
@@ -420,7 +447,7 @@ public class SmartAgent {
             } else {
 
                 OWLsameAs currentEquivalentClass = equivalentObjects.get(currentStatement.getSubject());
-                if( currentEquivalentClass == null){
+                if( currentEquivalentClass == null) {
                     currentEquivalentClass = new OWLsameAs(currentStatement.getSubject());
                     equivalentObjects.put(currentStatement.getSubject(), currentEquivalentClass);
                 }
@@ -527,5 +554,46 @@ public class SmartAgent {
 
         //System.out.println(PizzaIngredients);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SmartAgent that = (SmartAgent) o;
+
+        return delegateID.equals(that.delegateID) || delegateURI.equals(that.delegateURI);
+    }
+
+    @Override
+    public int hashCode() {
+        return delegateID.hashCode();
+    }
+
+    public void updateProfile(Property property, RDFNode object){
+
+        Model profile = ContactsProfileAgenda.getNamedModel("Profile");
+        Resource subject = ResourceFactory.createResource(delegateURI);
+        profile.createStatement(subject, property, object);
+        TDB.sync(profile);
+
+    }
+
+    public void updateAgenda(RDFNode calendar){
+
+        Model agenda = ContactsProfileAgenda.getNamedModel("Agenda");
+        Resource subject = ResourceFactory.createResource(delegateURI);
+        Property hasCalendar = ResourceFactory.createProperty("https://www.smartcontacts.com/ontology#hasCalendar");
+        agenda.createStatement(subject, hasCalendar, calendar);
+        TDB.sync(agenda);
+
+    }
+
+    public void getAdviceFromPizzaEvent(VEvent pizzata){
+
+        List<Attendee> attendees = pizzata.getAttendees();
+
+    }
+
 
 }

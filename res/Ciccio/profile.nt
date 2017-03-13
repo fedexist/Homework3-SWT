@@ -1,3 +1,3 @@
 <https://fleanend.github.io/ontology/ciccio> <http://www.smartcontacts.com/ontology#lovesPizza> <http://www.co-ode.org/ontologies/pizza/pizza.owl#SloppyGiuseppe> .
-<https://fleanend.github.io/ontology/ciccio> <https://fleanend.github.io/ontology/#loves> <http://tomatoandmozzarellaonly.org/ontology/#American> .
-<https://fleanend.github.io/ontology/ciccio> <https://fleanend.github.io/ontology/#loves> <http://tomatoandmozzarellaonly.org/ontology/#PrinceCarlo> .
+<https://fleanend.github.io/ontology/ciccio> <https://fleanend.github.io/ontology/#loves> <http://www.co-ode.org/ontologies/pizza/pizza.owl/#American> .
+<https://fleanend.github.io/ontology/ciccio> <https://fleanend.github.io/ontology/#loves> <http://www.co-ode.org/ontologies/pizza/pizza.owl/#PrinceCarlo> .

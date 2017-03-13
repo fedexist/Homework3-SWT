@@ -15,7 +15,7 @@ import java.util.*;
 public class TakeAPizzaTogether {
 
     static ArrayList<String> users = new ArrayList<>();
-    static ArrayList<SmartAgent> smartAgents = new ArrayList<>();
+    static HashMap<String, SmartAgent> smartAgents = new HashMap<>();
 
     static HashMap<String, ICalendar> usersCalendars = new HashMap<>();
     static HashMap<String, Dataset> userDatasets = new HashMap<>(); // <userID, Dataset>
@@ -78,11 +78,11 @@ public class TakeAPizzaTogether {
             dataset.addNamedModel("Agenda", agenda);
             userDatasets.put(user, dataset);
             TDB.sync(userDatasets.get(user));
-            smartAgents.add(new SmartAgent(user, dataset));
+            smartAgents.put(user.toLowerCase(), new SmartAgent(user, dataset));
         }
 
         //Scelta organizzatore, casuale
-        SmartAgent organizer = smartAgents.get(new Random().nextInt(smartAgents.size()));
+        SmartAgent organizer = new ArrayList<>(smartAgents.values()).get(new Random().nextInt(smartAgents.size()));
 
         Calendar c1 = GregorianCalendar.getInstance();
         c1.set(2017, Calendar.MAY,5);

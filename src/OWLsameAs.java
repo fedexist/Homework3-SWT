@@ -5,14 +5,12 @@ import java.util.ArrayList;
 
 public class OWLsameAs {
 
-    private Resource owlClass;
-
     private ArrayList<Resource> sameAsOwlClass;
 
     public OWLsameAs(Resource subject){
 
-        owlClass = subject;
         sameAsOwlClass = new ArrayList<>();
+        sameAsOwlClass.add(subject);
 
     }
 
@@ -25,10 +23,6 @@ public class OWLsameAs {
         if(o instanceof OWLsameAs){
 
             OWLsameAs toCompare = (OWLsameAs) o;
-            if( this.owlClass.equals(toCompare.owlClass)
-                ||   this.sameAsOwlClass.contains(toCompare.owlClass)
-                || toCompare.sameAsOwlClass.contains(this.owlClass))
-                return true;
 
             ArrayList<Resource> tmp = new ArrayList<>(toCompare.sameAsOwlClass);
             tmp.retainAll(sameAsOwlClass);
@@ -40,7 +34,7 @@ public class OWLsameAs {
 
     public void add(RDFNode resource){
 
-        if(!sameAsOwlClass.contains(resource.asResource()) && !owlClass.equals(resource))
+        if(!sameAsOwlClass.contains(resource.asResource()))
             sameAsOwlClass.add(resource.asResource());
 
     }
@@ -50,9 +44,7 @@ public class OWLsameAs {
         ArrayList<String> local = new ArrayList<>();
 
         for(Resource rs : sameAsOwlClass)
-        {
             local.add(rs.getLocalName());
-        }
 
         return local;
     }
@@ -60,15 +52,12 @@ public class OWLsameAs {
     @Override
     public String toString() {
         return "OWLsameAs{" +
-                "owlClass=" + owlClass +
-                ", sameAsOwlClass=" + sameAsOwlClass +
+                "sameAsOwlClass= " + sameAsOwlClass +
                 '}';
     }
 
     @Override
     public int hashCode() {
-        int result = owlClass.hashCode();
-        result = 31 * result + sameAsOwlClass.hashCode();
-        return result;
+        return sameAsOwlClass.hashCode();
     }
 }
