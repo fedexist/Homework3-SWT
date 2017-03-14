@@ -148,6 +148,30 @@ public class SmartAgent {
         scanner.close();
     }
 
+    private void importPizzeria(String pizzeria){
+
+        Scanner scanner = new Scanner(FileManager.get().open("./res/IngredientiPizzePizzerie.csv"));
+        scanner.nextLine();
+
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine();
+            String[] data = line.split(",");
+
+            //System.out.println(line);
+            if(!data[0].equals(pizzeria))
+                return;
+
+            Pizzeria pizzeriaTemp = new Pizzeria(data[0], data[1].equals("yes"));
+            if(!pizzerias.contains(pizzeriaTemp))
+                pizzerias.add(pizzeriaTemp);
+
+            pizzerias.get(pizzerias.indexOf(pizzeriaTemp))
+                    .pizzeDellaCasa.put(data[2], new ArrayList<>(Arrays.asList(data).subList(3, data.length)));
+
+        }
+        scanner.close();
+    }
+
     private void findSameIngredientsPizzas(){
 
         for( Pizzeria pizzeria: pizzerias) {
@@ -297,7 +321,7 @@ public class SmartAgent {
 
     public ICalendar createOrganisedEvent(HashMap<String, SmartAgent> participants, Date date){
 
-        System.out.println(delegateID + " is the organizer.");
+        //System.out.println(delegateID + " is the organizer.");
 
         fillContactsPreferences(new ArrayList<>(participants.values()));
         importPizzerias();
@@ -332,7 +356,7 @@ public class SmartAgent {
                 if(!intersection.isEmpty()){
                     ArrayList<String> containedPizzas = new ArrayList<>(intersection);
 
-                    System.out.println(contact + " likes " + containedPizzas + " in " + pizzeria.name);
+                    //System.out.println(contact + " likes " + containedPizzas + " in " + pizzeria.name);
 
                     ArrayList< Pair <String, ArrayList<String>> > currentPizzeria = ContactPizzerie.get(pizzeria);
                     if(currentPizzeria == null){
@@ -393,7 +417,7 @@ public class SmartAgent {
             }
 
         }
-        System.out.println("La pizzeria scelta è " + pizzerias.get(bestPizzeriaIndex).name + "\nIl menù che consigliamo è : " + menuSuggestions);
+        //System.out.println("La pizzeria scelta è " + pizzerias.get(bestPizzeriaIndex).name + "\nIl menù che consigliamo è : " + menuSuggestions);
 
         //Scorre il db delle pizzerie
 
@@ -421,6 +445,8 @@ public class SmartAgent {
         for(String attendee : menuSuggestions.keySet())
             if(participants.get(attendee.substring(36,attendee.length())) != null)
                 participants.get(attendee.substring(36,attendee.length())).updateAgenda(calendarNode);
+
+        settleAdviceFromPizzaEvent(pizzataTraAmici.getEvents().get(0));
 
         return pizzataTraAmici;
     }
@@ -589,9 +615,104 @@ public class SmartAgent {
 
     }
 
-    public void getAdviceFromPizzaEvent(VEvent pizzata){
+    public void settleAdviceFromPizzaEvent(VEvent pizzata){
 
         List<Attendee> attendees = pizzata.getAttendees();
+
+        String pizzeriaStr = pizzata.getLocation().getValue();
+
+        contactsPreferences.put(delegateURI,personalPreferences);
+
+        //System.out.print(pizzeriaStr);
+
+        boolean iAmInvited = false;
+
+        for(Attendee philosopher : attendees){
+            //System.out.print(philosopher.getEmail());
+            if (delegateEmail.equals(philosopher.getEmail())){
+                iAmInvited = true;
+            }
+        }
+
+        if(!iAmInvited) {
+            return;
+        }
+
+        importPizzeria(pizzeriaStr);
+        pizzaOntology.read(FileManager.get().open("./res/mypizza.owl"), "");
+        equivalentResourcesRetrieval();
+        findPizzasIngredients();
+        findSameIngredientsPizzas();
+        //System.out.println(pizzerias);
+
+        //for each pizzeria fills the list of contacts willing to dine there and the set of pizzas they wish to eat
+        for(Pizzeria pizzeria : pizzerias){
+            Set<String> pizzas = new HashSet<>(pizzeria.pizzeDellaCasaForPizzaOwl());
+            for(String contact : contactsPreferences.keySet()) {
+                Set<String> intersection = new HashSet<>(pizzas); // use the copy constructor
+                intersection.retainAll( pizzasLikedByContact(contact) );
+
+                //If pizzeria lacks celiac food, and contact is celiac, go away
+                if (!pizzeria.baseCeliaci && hasCeliacDisease(contact))
+                    continue;
+
+                //if the intersection isn't empty, that there's at least a pizza liked by the current contact
+                //then I add these pizzas to the appropriate slot in ContactPizzerie
+                if(!intersection.isEmpty()){
+                    ArrayList<String> containedPizzas = new ArrayList<>(intersection);
+
+                    //System.out.println(contact + " likes " + containedPizzas + " in " + pizzeria.name);
+
+                    ArrayList< Pair <String, ArrayList<String>> > currentPizzeria = ContactPizzerie.get(pizzeria);
+                    if(currentPizzeria == null){
+                        currentPizzeria = new ArrayList<>();
+                        ContactPizzerie.put(pizzeria, currentPizzeria);
+                    }
+
+                    currentPizzeria.add(new Pair<>(contact, containedPizzas));
+                }
+            }
+        }
+
+
+
+        Property mightlike = ResourceFactory.createProperty("http://www.smartcontacts.com/ontology#mightLike");
+
+        ArrayList<OWLsameAs> properties = new ArrayList<>(equivalentProperties.values());
+        for (Pair< String, ArrayList< String > > entry: ContactPizzerie.get(pizzerias.get(0))) {
+            String person = entry.first;
+            Set<String> pizzaCandidates = new HashSet<>(entry.second);
+            //System.out.println(person + " may like " + pizzaCandidates);
+            //System.out.println(person + "\nPizza candidates: " + pizzaCandidates + "\n");
+
+            Set<String> likedPizzas = new HashSet<>();
+            for (Pair<Property, RDFNode> preference : contactsPreferences.get(person)) {
+                OWLsameAs prop = new OWLsameAs(preference.first.asResource());
+
+                if (properties.contains(prop)) {
+                    if(ontologyToPizzeria.get(preference.second.asResource()) != null)
+                        likedPizzas.addAll( ontologyToPizzeria.get(preference.second.asResource()).equivalentLocals() );
+                    else
+                        likedPizzas.add(preference.second.asResource().getLocalName());
+                }
+            }
+            //System.out.println("Liked pizzas: " + likedPizzas + "\n");
+
+            pizzaCandidates.retainAll(likedPizzas);
+            ArrayList<String> pizzas = new ArrayList<>(pizzaCandidates);
+
+            //System.out.println("Def candidates: " + pizzas + "\n\n");
+            if(!pizzas.isEmpty())
+                menuSuggestions.put(person, pizzas.get(new Random().nextInt(pizzas.size())));
+            else {
+
+                String suggestion = entry.second.get(new Random().nextInt(entry.second.size()));
+                menuSuggestions.put(person, suggestion );
+                Resource object = ResourceFactory.createResource("http://www.co-ode.org/ontologies/pizza/pizza.owl/#" + suggestion);
+                updateProfile(mightlike, object);
+            }
+
+        }
 
     }
 
